@@ -33,7 +33,7 @@ jobs:
       - name: Create a draft release
         uses: actions/create-release@v1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.AUTO_UPDATE_GITHUB_TOKEN }}
         with:
           tag_name: ${{ steps.updated_version.outputs.version }}
           release_name: Release ${{ steps.updated_version.outputs.version }}
