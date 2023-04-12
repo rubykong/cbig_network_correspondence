@@ -68,11 +68,10 @@ def construct_network_name(atlas_input):
         network_names = None
     return network_names
 
-def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv):
+def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     """
     Draw a given overlap matrix. 
     """
-    #order_idx = np.argmax(overlap_data, axis=1)
     overlap_data_reorder = copy.deepcopy(overlap_data)
     order_idx = pair_match(overlap_data_reorder)
     overlap_data = overlap_data[:, order_idx]
@@ -125,16 +124,15 @@ def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv)
     
     plt.tight_layout()
     plt.ioff()
-    Path('/home/rkong/storage/ruby/data/Collaborators/NetworkName/test_toolbox/' + ref_atlas_name).mkdir(parents=True, exist_ok=True)
-    plt.savefig('/home/rkong/storage/ruby/data/Collaborators/NetworkName/test_toolbox/' + ref_atlas_name + '/' + other_atlas_name + '_withcb.png', dpi=200,bbox_inches='tight')
+    plt.savefig(figfile, dpi=200, bbox_inches='tight')
 
-def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv):
+def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     """
     Draw overlap matrix for any pair of existing atlases
     """
     overlap_file = path.join(RESULTS_PATH, ref_atlas_name, other_atlas_name + '.mat')
     data = scipy.io.loadmat(overlap_file)
     overlap_data = np.array(data.get('overlap'))
-    draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv)
+    draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile)
         
             
