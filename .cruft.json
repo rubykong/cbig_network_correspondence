@@ -1,0 +1,18 @@
+{
+  "template": "https://github.com/woltapp/wolt-python-package-cookiecutter",
+  "commit": "4eecc9c4d27e3c9321438bc1fdaf717bec5eadf6",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "author_name": "Ruby Kong",
+      "author_email": "roo.cone@gmail.com",
+      "github_username": "rubykong",
+      "project_name": "cbig_network_correspondence",
+      "project_slug": "cbig_network_correspondence",
+      "package_name": "cbig_network_correspondence",
+      "project_short_description": "A toolbox for exploring network correspondence across atlases",
+      "_template": "https://github.com/woltapp/wolt-python-package-cookiecutter"
+    }
+  },
+  "directory": null
+}
