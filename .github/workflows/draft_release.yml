@@ -21,6 +21,7 @@ jobs:
           poetry version ${{ github.event.inputs.version }}
           version=$(poetry version --short)
           echo ::set-output name="version::$version"
+          echo ${{ secrets.AUTO_UPDATE_GITHUB_TOKEN }}
       - name: Commit changes
         uses: EndBug/add-and-commit@v7
         with:
