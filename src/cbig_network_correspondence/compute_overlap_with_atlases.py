@@ -186,7 +186,6 @@ def compute_overlap(ref_params,other_params):
         ref_net_uni = np.setdiff1d(ref_net_uni, np.array([0]))
         if other_params.config.type == 'Hard':
             # Other atlas is also a hard parcellation
-            #mask = (ref_data != 0) & (other_data != 0)
 
             other_net_uni = np.unique(other_data.flatten())
             # Exclude regions labeled as 0
@@ -195,11 +194,9 @@ def compute_overlap(ref_params,other_params):
             overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni)))
             for each_ref_net in ref_net_uni:
                 curr_ref_net = ref_data == each_ref_net
-                #curr_ref_net[mask == 0] = 0
                 idx_j = 0
                 for each_other_net in other_net_uni:
                     curr_other_net = other_data == each_other_net
-                    #curr_other_net[mask == 0] = 0
                     overlap_val[idx_i][idx_j] = dice_coeff(curr_ref_net, curr_other_net)
                     idx_j = idx_j + 1
                 idx_i = idx_i + 1
