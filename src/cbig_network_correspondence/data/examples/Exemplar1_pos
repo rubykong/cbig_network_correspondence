@@ -1,0 +1,5 @@
+[data_info]
+Data_Name: Exemplar1(pos)
+Data_Space: FSLMNI2mm
+Data_Type: Metric
+Data_Threshold: [5,Inf]
