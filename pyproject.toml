@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cbig_network_correspondence"
-version = "0.0.2"
+version = "0.0.3"
 description = "A toolbox for exploring network correspondence across atlases"
 authors = [
     "Ruby Kong <roo.cone@gmail.com>",
@@ -31,6 +31,13 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7.1, <4.0"
+gh-folder-download = "*"
+natsort = "*"
+numpy = "*"
+nibabel = "*"
+scripy = "*"
+seaborn = "*"
+
 
 [tool.poetry.dev-dependencies]
 autoflake = "*"
