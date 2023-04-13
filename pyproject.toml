@@ -31,12 +31,12 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.7.1, <4.0"
-gh-folder-download = "*"
-natsort = "*"
-numpy = "*"
-nibabel = "*"
-scripy = "*"
-seaborn = "*"
+gh-folder-download = "^0.1.0"
+natsort = "^8.3.1"
+numpy = "^1.20.3"
+nibabel = "^5.0.1"
+scipy = "^1.5.3"
+seaborn = "^0.11.1"
 
 
 [tool.poetry.dev-dependencies]
