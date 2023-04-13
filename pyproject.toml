@@ -36,7 +36,7 @@ numpy = "^1.20.3"
 nibabel = "^5.0.1"
 scipy = "^1.5.3"
 seaborn = "^0.11.2"
-atlases_data = { git = "git+https://github.com/rubykong/cbig_network_correspondence_data.git", branch = "master" }
+atlases_data = { git = "https://github.com/rubykong/cbig_network_correspondence_data.git", branch = "master" }
 
 
 [tool.poetry.dev-dependencies]
