@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cbig_network_correspondence"
-version = "0.0.4"
+version = "0.0.5"
 description = "A toolbox for exploring network correspondence across atlases"
 authors = [
     "Ruby Kong <roo.cone@gmail.com>",
@@ -38,7 +38,7 @@ scipy = "^1.5.3"
 seaborn = "^0.11.2"
 
 [tool.poetry.scripts]
-my-script = "install:main"
+my-script = "cbig_network_correspondence.__install__:main"
 
 [tool.poetry.dev-dependencies]
 autoflake = "*"
