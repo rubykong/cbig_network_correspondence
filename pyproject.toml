@@ -31,12 +31,12 @@ packages = [
 
 [tool.poetry.dependencies]
 python = ">=3.8.1, <4.0"
-gh-folder-download = "^0.1.0"
 natsort = "^8.3.1"
 numpy = "^1.20.3"
 nibabel = "^5.0.1"
 scipy = "^1.5.3"
 seaborn = "^0.11.2"
+atlases_data = { git = "git+https://github.com/rubykong/cbig_network_correspondence_data.git", branch = "master" }
 
 
 [tool.poetry.dev-dependencies]
