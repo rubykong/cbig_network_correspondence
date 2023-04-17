@@ -135,4 +135,4 @@ def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     overlap_data = np.array(data.get('overlap'))
     draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile)
         
-            
+
