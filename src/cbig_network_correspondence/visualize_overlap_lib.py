@@ -163,10 +163,10 @@ def draw_overlap_map_fs_LR_32k(overlap_data, outfig):
                                   surf_map=overlap_data[32492:],
                                   hemi='right', view='medial', cmap=cmap4)
    
-    lh_fig_l.savefig(path.join(outfig, "_lh_lateral"), dpi=300)
-    lh_fig_m.savefig(path.join(outfig, "_lh_medial"), dpi=300)
-    rh_fig_l.savefig(path.join(outfig, "_rh_lateral"), dpi=300)
-    rh_fig_m.savefig(path.join(outfig, "_rh_medial"), dpi=300)
+    lh_fig_l.savefig(outfig + "_lh_lateral", dpi=300)
+    lh_fig_m.savefig(outfig + "_lh_medial", dpi=300)
+    rh_fig_l.savefig(outfig + "_rh_lateral", dpi=300)
+    rh_fig_m.savefig(outfig + "_rh_medial", dpi=300)
 
 
 def draw_overlap_map_fsaverage6(overlap_data, outfig):
@@ -176,8 +176,8 @@ def draw_overlap_map_fsaverage6(overlap_data, outfig):
     colors4_list = [(0.7, 0.7, 0.7), (0.89, 0.39, 0.45),
                     (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
     cmap4 = colors.ListedColormap(colors4_list)
-    lh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage', 'lh.inflated')
-    rh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage', 'rh.inflated')
+    lh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage6', 'lh.inflated')
+    rh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage6', 'rh.inflated')
 
     lh_fig_l = plotting.plot_surf(surf_mesh=lh_surf_mesh,
                                   surf_map=overlap_data[:40962],
@@ -192,10 +192,10 @@ def draw_overlap_map_fsaverage6(overlap_data, outfig):
                                   surf_map=overlap_data[40962:],
                                   hemi='right', view='medial', cmap=cmap4)
 
-    lh_fig_l.savefig(path.join(outfig, "_lh_lateral"), dpi=300)
-    lh_fig_m.savefig(path.join(outfig, "_lh_medial"), dpi=300)
-    rh_fig_l.savefig(path.join(outfig, "_rh_lateral"), dpi=300)
-    rh_fig_m.savefig(path.join(outfig, "_rh_medial"), dpi=300)
+    lh_fig_l.savefig(outfig + "_lh_lateral", dpi=300)
+    lh_fig_m.savefig(outfig + "_lh_medial", dpi=300)
+    rh_fig_l.savefig(outfig + "_rh_lateral", dpi=300)
+    rh_fig_m.savefig(outfig + "_rh_medial", dpi=300)
 
 
 def draw_overlap_map_FSLMNI2mm(overlap_data, outfig, coords=[-4, -31, 18]):
@@ -211,7 +211,7 @@ def draw_overlap_map_FSLMNI2mm(overlap_data, outfig, coords=[-4, -31, 18]):
     new_image = image.new_img_like(roi_image_header, overlap_data)
     figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
                              cut_coords=coords, cmap=cmap3)
-    figv.savefig(path.join(outfig, "_FSLMNI2mm"), dpi=300)
+    figv.savefig(outfig + "_FSLMNI2mm", dpi=300)
 
 
 def draw_overlap_map_LairdColin2mm(overlap_data, outfig, coords=[-4, -31, 18]):
@@ -229,7 +229,7 @@ def draw_overlap_map_LairdColin2mm(overlap_data, outfig, coords=[-4, -31, 18]):
     new_image = image.new_img_like(roi_image_header, overlap_data)
     figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
                              cut_coords=coords, cmap=cmap3)
-    figv.savefig(path.join(outfig, "_LairdColin2mm"), dpi=300)
+    figv.savefig(outfig + "_LairdColin2mm", dpi=300)
 
 
 def draw_overlap_map_ShenColin1mm(overlap_data, outfig, coords=[-4, -31, 18]):
@@ -245,7 +245,7 @@ def draw_overlap_map_ShenColin1mm(overlap_data, outfig, coords=[-4, -31, 18]):
     new_image = image.new_img_like(roi_image_header, overlap_data)
     figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
                              cut_coords=coords, cmap=cmap3)
-    figv.savefig(path.join(outfig, "_ShenColin1mm"), dpi=300)
+    figv.savefig(outfig + "_ShenColin1mm", dpi=300)
 
 
 def draw_overlap_map(space_name, overlap_data, outfig, coords=[-4, -31, 18]):
