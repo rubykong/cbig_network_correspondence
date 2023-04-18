@@ -137,7 +137,8 @@ cnc.visualize_overlap_lib.draw_overlap_map("fsaverage6", overlap_data, "<path_to
 
 # When Glasser2016 atlas atlas is the reference atlas
 overlap_data = cnc.compute_overlap_with_atlases.obtain_overlap_atlases("MG360J12", "TY17", "Default", "DefaultA")
-cnc.visualize_overlap_lib.draw_overlap_map("fs_LR_32k", overlap_data, "<path_to_figures>/MG360J12_TY17_Default_DefaultA")
+# By default we use coords=[-4, -31, 18] to visualize volumetric data, you can change it to any other coordinates
+cnc.visualize_overlap_lib.draw_overlap_map("fs_LR_32k", overlap_data, "<path_to_figures>/MG360J12_TY17_Default_DefaultA", [-4, -31, 18])
 
 ```
 
