@@ -153,7 +153,7 @@ import  cbig_network_correspondence as cnc
 
 example = cnc.load_example
 # the example config file
-print(example.example_confige)
+print(example.example_config)
 # the path to the example data
 print(example.example_nii)
 # construct parameters for example data

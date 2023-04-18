@@ -5,8 +5,8 @@ from os import listdir
 from natsort import natsorted
 import numpy as np
 import nibabel as nib
-import grab_data_info as grab_info
-import visualize_overlap_lib as vis
+from . import grab_data_info as grab_info
+from . import visualize_overlap_lib as vis
 from scipy.io import loadmat
 
 # define path

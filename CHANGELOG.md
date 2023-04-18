@@ -8,6 +8,9 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - visualization scripts to visualize overlap data in surface or volume
 - documentation in readme
 
+### Fixed
+- import error
+
 ## [0.0.9] - 2023-04-17
 ### Added
 - we add the scripts to compute network correspondence between atlases
