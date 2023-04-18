@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "cbig_network_correspondence"
-version = "0.0.9"
+version = "0.0.10"
 description = "A toolbox for exploring network correspondence across atlases"
 authors = [
     "Ruby Kong <roo.cone@gmail.com>",
@@ -8,7 +8,6 @@ authors = [
 license = "MIT"
 readme = "README.md"
 
-documentation = "https://rubykong.github.io/cbig_network_correspondence"
 homepage = "https://rubykong.github.io/cbig_network_correspondence"
 repository = "https://github.com/rubykong/cbig_network_correspondence"
 

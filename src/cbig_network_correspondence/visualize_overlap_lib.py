@@ -4,7 +4,9 @@ import scipy.io
 import seaborn as sns
 import matplotlib.pyplot as plt
 import copy
-from pathlib import Path
+from nilearn import plotting
+from nilearn import image
+import matplotlib.colors as colors
 
 
 # define path
@@ -12,6 +14,7 @@ PROJECT_PATH = path.dirname(path.abspath(__file__))
 NET_NAME_PATH = path.join(PROJECT_PATH, "data", "network_names")
 RESULTS_PATH = path.join(PROJECT_PATH, "data", "overlap_results")
 ATLAS_LIST_PATH = path.join(PROJECT_PATH, "data", "atlas_list")
+TEMPLATE_PATH = path.join(PROJECT_PATH, "data", "templates")
 
 def pair_match(overlap_mat):
     """
@@ -126,6 +129,7 @@ def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv,
     plt.ioff()
     plt.savefig(figfile, dpi=200, bbox_inches='tight')
 
+
 def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     """
     Draw overlap matrix for any pair of existing atlases
@@ -136,3 +140,131 @@ def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile)
         
 
+def draw_overlap_map_fs_LR_32k(overlap_data, outfig):
+    """
+    Draw surface maps for overlappping networks on fs_LR_32k surface.
+    """
+    colors4_list = [(0.7, 0.7, 0.7), (0.89, 0.39, 0.45),
+                    (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
+    cmap4 = colors.ListedColormap(colors4_list)
+    lh_surf_mesh = path.join(TEMPLATE_PATH, 'fs_LR_32k', 'lh.very_inflated')
+    rh_surf_mesh = path.join(TEMPLATE_PATH, 'fs_LR_32k', 'rh.very_inflated')
+    
+    lh_fig_l = plotting.plot_surf(surf_mesh=lh_surf_mesh,
+                                  surf_map=overlap_data[:32492],
+                                  hemi='left', view='lateral', cmap=cmap4)
+    lh_fig_m = plotting.plot_surf(surf_mesh=lh_surf_mesh,
+                                  surf_map=overlap_data[:32492],
+                                  hemi='left', view='medial', cmap=cmap4)
+    rh_fig_l = plotting.plot_surf(surf_mesh=rh_surf_mesh,
+                                  surf_map=overlap_data[32492:],
+                                  hemi='right', view='lateral', cmap=cmap4)
+    rh_fig_m = plotting.plot_surf(surf_mesh=rh_surf_mesh,
+                                  surf_map=overlap_data[32492:],
+                                  hemi='right', view='medial', cmap=cmap4)
+   
+    lh_fig_l.savefig(path.join(outfig, "_lh_lateral"), dpi=300)
+    lh_fig_m.savefig(path.join(outfig, "_lh_medial"), dpi=300)
+    rh_fig_l.savefig(path.join(outfig, "_rh_lateral"), dpi=300)
+    rh_fig_m.savefig(path.join(outfig, "_rh_medial"), dpi=300)
+
+
+def draw_overlap_map_fsaverage6(overlap_data, outfig):
+    """
+    Draw surface maps for overlappping networks on fsaverage6 surface.
+    """
+    colors4_list = [(0.7, 0.7, 0.7), (0.89, 0.39, 0.45),
+                    (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
+    cmap4 = colors.ListedColormap(colors4_list)
+    lh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage', 'lh.inflated')
+    rh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage', 'rh.inflated')
+
+    lh_fig_l = plotting.plot_surf(surf_mesh=lh_surf_mesh,
+                                  surf_map=overlap_data[:40962],
+                                  hemi='left', view='lateral', cmap=cmap4)
+    lh_fig_m = plotting.plot_surf(surf_mesh=lh_surf_mesh,
+                                  surf_map=overlap_data[:40962],
+                                  hemi='left', view='medial', cmap=cmap4)
+    rh_fig_l = plotting.plot_surf(surf_mesh=rh_surf_mesh,
+                                  surf_map=overlap_data[40962:],
+                                  hemi='right', view='lateral', cmap=cmap4)
+    rh_fig_m = plotting.plot_surf(surf_mesh=rh_surf_mesh,
+                                  surf_map=overlap_data[40962:],
+                                  hemi='right', view='medial', cmap=cmap4)
+
+    lh_fig_l.savefig(path.join(outfig, "_lh_lateral"), dpi=300)
+    lh_fig_m.savefig(path.join(outfig, "_lh_medial"), dpi=300)
+    rh_fig_l.savefig(path.join(outfig, "_rh_lateral"), dpi=300)
+    rh_fig_m.savefig(path.join(outfig, "_rh_medial"), dpi=300)
+
+
+def draw_overlap_map_FSLMNI2mm(overlap_data, outfig, coords=[-4, -31, 18]):
+    """
+    Draw volumetric maps for overlappping networks on FSLMNI2mm.
+    coords is the coordinates of the point where the cut is performed.
+    """
+    colors3_list = [(0.89, 0.39, 0.45), (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
+    cmap3 = colors.ListedColormap(colors3_list)
+    bg_image = image.load_img(path.join(TEMPLATE_PATH, 'FSLMNI2mm.nii.gz'))
+    roi_image_header = image.load_img(path.join(TEMPLATE_PATH,
+                                                'FSLMNI2mm_header.nii.gz'))
+    new_image = image.new_img_like(roi_image_header, overlap_data)
+    figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
+                             cut_coords=coords, cmap=cmap3)
+    figv.savefig(path.join(outfig, "_FSLMNI2mm"), dpi=300)
+
+
+def draw_overlap_map_LairdColin2mm(overlap_data, outfig, coords=[-4, -31, 18]):
+    """
+    Draw volumetric maps for overlappping networks on LairdColin2mm.
+    coords is the coordinates of the point where the cut is performed.
+    Note that LairdColin2mm is the space of Laird atlas, we use 
+    LairdColin1mm as the background image. 
+    """
+    colors3_list = [(0.89, 0.39, 0.45), (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
+    cmap3 = colors.ListedColormap(colors3_list)
+    bg_image = image.load_img(path.join(TEMPLATE_PATH, 'LairdColin1mm.nii.gz'))
+    roi_image_header = image.load_img(path.join(TEMPLATE_PATH,
+                                                'FSLMNI2mm_header.nii.gz'))
+    new_image = image.new_img_like(roi_image_header, overlap_data)
+    figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
+                             cut_coords=coords, cmap=cmap3)
+    figv.savefig(path.join(outfig, "_LairdColin2mm"), dpi=300)
+
+
+def draw_overlap_map_ShenColin1mm(overlap_data, outfig, coords=[-4, -31, 18]):
+    """
+    Draw volumetric maps for overlappping networks on ShenColin1mm.
+    coords is the coordinates of the point where the cut is performed.
+    """
+    colors3_list = [(0.89, 0.39, 0.45), (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
+    cmap3 = colors.ListedColormap(colors3_list)
+    bg_image = image.load_img(path.join(TEMPLATE_PATH, 'ShenColin1mm.nii.gz'))
+    roi_image_header = image.load_img(path.join(TEMPLATE_PATH,
+                                                'ShenColin1mm_header.nii.gz'))
+    new_image = image.new_img_like(roi_image_header, overlap_data)
+    figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
+                             cut_coords=coords, cmap=cmap3)
+    figv.savefig(path.join(outfig, "_ShenColin1mm"), dpi=300)
+
+
+def draw_overlap_map(space_name, overlap_data, outfig, coords=[-4, -31, 18]):
+    """
+    Draw brain maps for overlappping networks. The brain map will be in the
+    same space as the reference data/atlas space.
+    """
+    if space_name == "fs_LR_32k":
+        draw_overlap_map_fs_LR_32k(overlap_data, outfig)
+    elif space_name == "fsaverage6":
+        draw_overlap_map_fsaverage6(overlap_data, outfig)
+    elif space_name == "FSLMNI2mm":
+        draw_overlap_map_FSLMNI2mm(overlap_data, outfig, coords)
+    elif space_name == "LairdColin2mm":
+        draw_overlap_map_LairdColin2mm(overlap_data, outfig, coords)
+    elif space_name == "ShenColin1mm":
+        draw_overlap_map_ShenColin1mm(overlap_data, outfig, coords)
+    else:
+        print("We current don't provide the function to draw brain \
+              maps for" + space_name + "space. Please \
+              check nilearn and use the function in nilearn to draw \
+              the brain maps.")
