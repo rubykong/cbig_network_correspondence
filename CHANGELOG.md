@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- import error for debugging purpose and add templates
 
 ## [0.0.10] - 2023-04-18
 ### Added
@@ -24,4 +26,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [Unreleased]: https://github.com/rubykong/cbig_network_correspondence/compare/0.0.10...master
 [0.0.10]: https://github.com/rubykong/cbig_network_correspondence/compare/0.0.9...0.0.10
 [0.0.9]: https://github.com/rubykong/cbig_network_correspondence/tree/0.0.9
-
