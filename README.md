@@ -8,6 +8,8 @@
 
 ---
 
+**Documentation**: [https://rubykong.github.io/cbig_network_correspondence](https://rubykong.github.io/cbig_network_correspondence)
+
 **Source Code**: [https://github.com/rubykong/cbig_network_correspondence](https://github.com/rubykong/cbig_network_correspondence)
 
 **PyPI**: [https://pypi.org/project/cbig_network_correspondence/](https://pypi.org/project/cbig_network_correspondence/)
@@ -36,7 +38,7 @@ We will provide detailed usage of these function in the following sections.
 
 Check this list for the atlases we have included. We use abbreviations for the atlases. Here we provide the decription for each atlas. If you want us to include your atlas, please contact me (roo.cone@gmail.com).
 
-![networkcorrespondence](https://user-images.githubusercontent.com/20438248/232702654-3f334164-bb13-41af-a7aa-8f29bae9fca7.jpg)
+![networkcorrespondence](https://github.com/rubykong/cbig_network_correspondence_data/assets/20438248/b430f2fe-4b78-49f2-9084-5a43d450dba1)
 
 These atlases should be automatically downloaded when you install the toolbox. If you want to download the atlases manually, you can find the atlases here: https://github.com/rubykong/cbig_network_correspondence_data. The atlas data will be automatically downloaded in your python package directory: `cbig_network_correspondence/src/cbig_network_correspondence/data`.
 
