@@ -22,17 +22,21 @@ def pair_match(overlap_mat):
     matched pair and reorder the network order to shape the overlap_mat to be
     a diagnol shape.
     """
-    if overlap_mat.shape[0] > overlap_mat.shape[1]:
-        overlap_mat_new = overlap_mat[0:overlap_mat.shape[1],:]
+    # if dimension is 1 sort overlap_mat from high to low and get order
+    if np.min(overlap_mat.shape) == 1:
+        order_idx = np.argsort(-overlap_mat.flatten())
     else:
-        overlap_mat_new = overlap_mat[:]   
-    order_idx = [0] * overlap_mat_new.shape[0]
-    for i in range(overlap_mat_new.shape[0]):
-        order_idx[i] = np.argmax(overlap_mat_new[i,:])
-        overlap_mat_new[:,order_idx[i]] = -1
-    if overlap_mat.shape[0] < overlap_mat.shape[1]:
-        remain_idx = [i for i in np.arange(overlap_mat.shape[1]) if i not in order_idx]
-        order_idx = list(order_idx) + list(remain_idx)
+        if overlap_mat.shape[0] > overlap_mat.shape[1]:
+            overlap_mat_new = overlap_mat[0:overlap_mat.shape[1],:]
+        else:
+            overlap_mat_new = overlap_mat[:]   
+        order_idx = [0] * overlap_mat_new.shape[0]
+        for i in range(overlap_mat_new.shape[0]):
+            order_idx[i] = np.argmax(overlap_mat_new[i,:])
+            overlap_mat_new[:,order_idx[i]] = -1
+        if overlap_mat.shape[0] < overlap_mat.shape[1]:
+            remain_idx = [i for i in np.arange(overlap_mat.shape[1]) if i not in order_idx]
+            order_idx = list(order_idx) + list(remain_idx)
     return order_idx
 
 def construct_network_name(atlas_input):
@@ -71,19 +75,22 @@ def construct_network_name(atlas_input):
         network_names = None
     return network_names
 
-def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile):
+def draw_overlap_mat(overlap_data_info, ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     """
     Draw a given overlap matrix. 
     """
+    overlap_data = overlap_data_info['Dice']
+    pval = overlap_data_info['P value']
     overlap_data_reorder = copy.deepcopy(overlap_data)
     order_idx = pair_match(overlap_data_reorder)
     overlap_data = overlap_data[:, order_idx]
+    pval = pval[:, order_idx]
     reference_name = construct_network_name(ref_atlas_name)
     other_name = construct_network_name(other_atlas_name)
 
     other_name_new = [other_name[i] for i in order_idx]
 
-    _, axes = plt.subplots(figsize=(8,8))
+    _, axes = plt.subplots(figsize=(7,7))
     sns.set(font_scale=1)
     sns.set_style("ticks")
     im = sns.heatmap(
@@ -98,6 +105,10 @@ def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv,
             yticklabels=reference_name,
             cbar=False
             )
+    for i in range(overlap_data.shape[0]):
+        for j in range(overlap_data.shape[1]):
+            if pval[i,j] < 0.05:
+                im.text(j+0.5, i+0.5, '*', fontsize=14, ha='center', va='center', color='white')
 
     frame_len=3.5
     axes.axhline(y=0, color='k',linewidth=frame_len)
@@ -129,6 +140,23 @@ def draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv,
     plt.ioff()
     plt.savefig(figfile, dpi=200, bbox_inches='tight')
 
+
+def draw_overlap_mat_all(overlap_data_all, ref_atlas_name, minv, maxv, figfile):
+    atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+    atlas_names = atlas_list_file.read().splitlines()
+    for other_atlas_name in atlas_names:
+        figfile_new = figfile + "_" + other_atlas_name
+        overlap_data = overlap_data_all[other_atlas_name]
+        draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile_new)
+
+def construct_network_name_all(atlas_names=None):
+    if atlas_names is None:
+        atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+        atlas_names = atlas_list_file.read().splitlines()
+    network_names = {}
+    for atlas_name in atlas_names:
+        network_names[atlas_name] = construct_network_name(atlas_name)
+    return network_names
 
 def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     """

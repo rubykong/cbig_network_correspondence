@@ -108,6 +108,6 @@ def check_args_format(args):
     if args.threshold is None:
         if args.type == 'Soft':
             args.threshold = thresh_str_to_num('[0, Inf]')
-            print("Data threshold is not specified for soft parcellation \
-                or metric data. Will use the default threshold [0, Inf].")
+            print("Data threshold is not specified for soft parcellation" +
+                "or metric data. Will use the default threshold [0, Inf].")
     return args
