@@ -5,6 +5,8 @@ from os import listdir
 from natsort import natsorted
 import numpy as np
 import nibabel as nib
+from brainspace.null_models import SpinPermutations
+import pickle
 from . import grab_data_info as grab_info
 from . import visualize_overlap_lib as vis
 from scipy.io import loadmat
@@ -15,6 +17,8 @@ ATLASES_PATH = path.join(PROJECT_PATH, "data", "atlases")
 NETWORK_ASSIGN_PATH = path.join(PROJECT_PATH, "data", "network_assignment")
 RESULTS_PATH = path.join(PROJECT_PATH, "data", "overlap_results")
 NET_NAME_PATH = path.join(PROJECT_PATH, "data", "network_names")
+ATLAS_LIST_PATH = path.join(PROJECT_PATH, "data", "atlas_list")
+ROTAION_PATH = path.join(PROJECT_PATH, "data", "spin_rotations")
 
 
 class DataParams:
@@ -26,8 +30,13 @@ class DataParams:
         self.project_path = PROJECT_PATH
         self.atlases_path = ATLASES_PATH
         self.network_assign_path = NETWORK_ASSIGN_PATH
-        self.config = grab_info.read_config(config)
 
+        #if config is a file path
+        if path.isfile(config):
+            self.config = grab_info.read_config(config)
+        #if config is a config object
+        else:
+            self.config = config
 
 class RefAtlasParams:
     """
@@ -79,9 +88,14 @@ def sort_files(data_path, filename):
                 files.append(eachfile)
         files_sorted = natsorted(files)
         files_sorted_res = [path.join(data_path, str(i)) for i in files_sorted]
+        return files_sorted_res
     elif path.isfile(data_path):
         files_sorted_res = [data_path]
-    return files_sorted_res
+        return files_sorted_res
+    else:
+        #print error message
+        print("ERROR! Please provide a valid data path!")
+        sys.exit(1)
 
 
 def read_file(data_path):
@@ -97,6 +111,11 @@ def read_file(data_path):
             mat_data = loadmat(data_path)
             mat_data_lh = mat_data.get('lh_labels')
             mat_data_rh = mat_data.get('rh_labels')
+            # Transpose lh_labels and rh_labels if needed
+            if mat_data_lh.shape[0] < mat_data_lh.shape[1]:
+                mat_data_lh = mat_data_lh.T
+            if mat_data_rh.shape[0] < mat_data_rh.shape[1]:
+                mat_data_rh = mat_data_rh.T
             data = np.concatenate((mat_data_lh, mat_data_rh))
         elif ".npy" in data_path:
             data = np.load(data_path)
@@ -131,8 +150,8 @@ def read_atlas(params):
 
     if params.config.type == 'Hard':
         print('This is a hard parcellation.')
-        params.data_path = sort_files(params.data_path, params.config.name)
-        data = read_file(params.data_path[0])
+        params.data_sort_path = sort_files(params.data_path, params.config.name)
+        data = read_file(params.data_sort_path[0])
         # The hard parcellation is an areal-level parcellation
         # We need to do network assignment based on the povided mapping
         if params.config.netassign:
@@ -141,7 +160,10 @@ def read_atlas(params):
                                 + ".mat")
             mapfile_data = loadmat(mapfile)
             mapping = mapfile_data.get('mapping')
-            for roi in range(1, mapping.shape[1]+1):
+            #transpose mapping if needed
+            if mapping.shape[0] > mapping.shape[1]:
+                mapping = mapping.T
+            for roi in range(1, np.max(mapping.shape)+1):
                 data[datatmp == roi] = mapping[0][roi-1]
             print("Finish network assignmeent!")
 
@@ -163,8 +185,8 @@ def read_atlas(params):
                                      "cortical_masks",
                                      params.config.space + ".nii.gz")
             mask = read_file(corticalmask)
-        params.data_path = sort_files(params.data_path, params.config.name)
-        for curr_data_file in params.data_path:
+        params.data_sort_path = sort_files(params.data_path, params.config.name)
+        for curr_data_file in params.data_sort_path:
             curr_data = read_file(curr_data_file)
             # Apply cortical mask
             if "mm" in params.config.space:
@@ -188,6 +210,14 @@ def dice_coeff(net1, net2):
     coefficient = (2.0 * intersection) / (np.sum(net1) + np.sum(net2))
     return coefficient
 
+def permutation_pvalue(overlap_val, overlap_val_spin):
+    """
+    Computes spin permuation p-value for overlap matrix
+    """
+    diff_val = [overlap_val - overlap_val_spin[:,:,i] for i in range(overlap_val_spin.shape[2])]
+    p_val = (np.sum(np.array(diff_val) < 0, axis=0) + 1)/(overlap_val_spin.shape[2] + 1)
+    
+    return p_val
 
 def compute_overlap(ref_params, other_params):
     """
@@ -267,6 +297,98 @@ def compute_overlap(ref_params, other_params):
 
     return overlap_val
 
+def compute_overlap_spin(ref_params, other_params):
+    """
+    Computes network overlap between reference data or atlas with
+    another atlas.
+    """
+    # prepare spin rotations
+    rotation_file = path.join(ROTAION_PATH, ref_params.config.space, "1000_spin_permutations_state0.pkl")
+    spin_rots = pickle.load(open(rotation_file, "rb"))
+    if ref_params.config.space == "fsaverage6":
+        hemi_size = 40962
+    elif ref_params.config.space == "fs_LR_32k":
+        hemi_size = 32492
+    
+    other_params.config.space = copy.deepcopy(ref_params.config.space)
+    orig_ref_data = read_atlas(ref_params)
+    other_data = read_atlas(other_params)
+
+    # roate ref_data
+    # if ref_data is a list, then it is a soft parcellation or metric data, rotate each element
+    if isinstance(orig_ref_data, list):
+        ref_data_rotated = []
+        for each_ref_data in orig_ref_data:
+            ref_data_rotated.append(np.hstack(spin_rots.randomize(each_ref_data[:hemi_size],each_ref_data[hemi_size:])))        
+    else:
+        ref_data_rotated = np.hstack(spin_rots.randomize(orig_ref_data[:hemi_size],orig_ref_data[hemi_size:]))
+        
+    if ref_params.config.type == 'Hard':
+        # Reference atlas/data is a hard parcellation
+        ref_net_uni = np.unique(orig_ref_data.flatten())
+        # Exclude regions labeled as 0
+        ref_net_uni = np.setdiff1d(ref_net_uni, np.array([0]))
+        if other_params.config.type == 'Hard':
+            # Other atlas is also a hard parcellation
+
+            other_net_uni = np.unique(other_data.flatten())
+            # Exclude regions labeled as 0
+            other_net_uni = np.setdiff1d(other_net_uni, np.array([0]))
+            idx_i = 0
+            overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni),1000))
+            for each_ref_net in ref_net_uni:
+                curr_ref_net = ref_data_rotated == each_ref_net
+                idx_j = 0
+                for each_other_net in other_net_uni:
+                    curr_other_net = other_data == each_other_net
+                    overlap_val[idx_i][idx_j] = [dice_coeff(curr_ref_net[i_rot,:],curr_other_net) for i_rot in range(curr_ref_net.shape[0])]
+                    idx_j = idx_j + 1
+                idx_i = idx_i + 1
+        elif other_params.config.type in ('Soft', 'Metric'):
+            other_net_uni = range(0, len(other_data))
+            idx_i = 0
+            overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni)))
+            for each_ref_net in ref_net_uni:
+                curr_ref_net = ref_data_rotated == each_ref_net
+                idx_j = 0
+                for each_other_net in other_net_uni:
+                    curr_other_net = other_data[each_other_net]
+                    overlap_val[idx_i][idx_j] = [dice_coeff(curr_ref_net[i_rot,:],curr_other_net) for i_rot in range(curr_ref_net.shape[0])]
+
+                    idx_j = idx_j + 1
+                idx_i = idx_i + 1
+    elif ref_params.config.type in ('Soft', 'Metric'):
+        # Reference atlas/data is a soft parcellation or any metric data
+        ref_net_uni = range(0, len(orig_ref_data))
+        if other_params.config.type == 'Hard':
+            # Other atlas is also a hard parcellation
+            other_net_uni = np.unique(other_data.flatten())
+            # Exclude regions labeled as 0
+            other_net_uni = np.setdiff1d(other_net_uni, np.array([0]))
+            idx_i = 0
+            overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni), 1000))
+            for each_ref_net in ref_net_uni:
+                curr_ref_net = ref_data_rotated[each_ref_net]
+                idx_j = 0
+                for each_other_net in other_net_uni:
+                    curr_other_net = other_data == each_other_net
+                    overlap_val[idx_i][idx_j] = [dice_coeff(curr_ref_net[i_rot,:],curr_other_net) for i_rot in range(curr_ref_net.shape[0])]
+                    idx_j = idx_j + 1
+                idx_i = idx_i + 1
+        elif other_params.config.type in ('Soft', 'Metric'):
+            other_net_uni = range(0, len(other_data))
+            idx_i = 0
+            overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni), 1000))
+            for each_ref_net in ref_net_uni:
+                curr_ref_net = ref_data_rotated[each_ref_net]
+                idx_j = 0
+                for each_other_net in other_net_uni:
+                    curr_other_net = other_data[each_other_net]
+                    overlap_val[idx_i][idx_j] = [dice_coeff(curr_ref_net[i_rot,:],curr_other_net) for i_rot in range(curr_ref_net.shape[0])]
+                    idx_j = idx_j + 1
+                idx_i = idx_i + 1
+
+    return overlap_val
 
 def compute_overlap_data(data_params, atlas_name):
     """
@@ -280,7 +402,41 @@ def compute_overlap_data(data_params, atlas_name):
 
     return overlap_val
 
+def compute_overlap_data_all(data_params, atlas_names=None):
+    """
+    Computes overlap matrix for a given data and all existing atlases
+    """
+    # Reads in the atlas in the same space as the data
+    if atlas_names is None:
+        atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+        atlas_names = atlas_list_file.read().splitlines()
+    overlap_val = {}
+    for atlas_name in atlas_names:
+        print("Computing overlap with " + atlas_name)
+        atlas_params = AtlasParams(atlas_name, data_params.config.space)
+        # Compute the overlap matrix between data and the atlas
+        overlap_val[atlas_name] = compute_overlap(data_params, atlas_params)
+    return overlap_val
 
+def permute_overlap_data_all(data_params, atlas_names):
+    """
+    Computes overlap matrix for a given data and all existing atlases
+    """
+    if atlas_names is None:
+        # Reads in the atlas in the same space as the data
+        atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+        atlas_names = atlas_list_file.read().splitlines()
+    p_val = {}
+    for atlas_name in atlas_names:
+        print("Computing overlap with " + atlas_name)
+        atlas_params = AtlasParams(atlas_name, data_params.config.space)
+        
+        # Compute the overlap matrix between data and the atlas
+        overlap_val = compute_overlap(data_params, atlas_params)
+        overlap_val_spin = compute_overlap_spin(data_params, atlas_params)
+        p_val[atlas_name] = permutation_pvalue(overlap_val, overlap_val_spin)
+    return p_val
+    
 def load_overlap_atlases(ref_atlas_name, other_atlas_name):
     """
     Load overlap matrix for any pair of existing atlases
