@@ -12,6 +12,7 @@ from plottable.plots import bar, percentile_bars, percentile_stars, progress_don
 from plottable.cmap import normed_cmap
 from plottable.plots import circled_image # image
 from pandas.plotting import table
+import os
 
 
 def dice_percent(val: float) -> str:
@@ -183,6 +184,12 @@ def scale_fontsize(x, groups, low=12, high=20):
     return sc
 
 def circular_barchart(df,group_names,group_names_full,p_threshold=0.05):
+    # if group_names is a list, change it to numpy array
+    if type(group_names) == list:
+        group_names = np.array(group_names)
+    # if group_names_full is a list, change it to numpy array
+    if type(group_names_full) == list:
+        group_names_full = np.array(group_names_full)
     # All this part is like the code above
     for group in group_names:
         curr_VALUES = df[df["group"]==group]["dice"].values * 100
@@ -289,6 +296,8 @@ def circular_barchart(df,group_names,group_names_full,p_threshold=0.05):
         handlelength=1,
         handleheight=1,
         handletextpad=0.2,columnspacing=0.7)
+
+    return fig
     
 def circular_subplot(ax,VALUES, LABELS,PVALUE,COLORS,Group,p_threshold=0.05):
     # All this part is like the code above
@@ -424,6 +433,7 @@ def circular_atlases_all(df,group_names,p_threshold=0.05):
 
         circular_subplot(ax,VALUES, LABELS,PVALUE,COLORS,idx+1)
     fig.subplots_adjust(wspace=2, hspace=1.1)
+    return fig
 
 def table_summary_plot(df,atlas_names_list, atlas_names_list_full):
     fig = {}
@@ -615,3 +625,25 @@ def table_summary_atlas(df):
         if key[1] == -1:  # Check if it's a row name cell
             cell.set_text_props(weight='bold')
     plt.show()
+
+def report_network_correspondence(df,atlas_names_list, atlas_names_list_full=None,fig_dir=None):
+    if atlas_names_list_full is None:
+        atlas_names_list_full = atlas_names_list            
+    
+    fig_chart = circular_barchart(df,atlas_names_list,atlas_names_list_full)
+    #save figure
+    #plt.savefig(fig_dir + "/circular_barchart.png", dpi=300, bbox_inches='tight')
+    fig_spider = circular_atlases_all(df,atlas_names_list)
+    #save figure
+    #plt.savefig(fig_dir + "/circular_atlases_all.png", dpi=300, bbox_inches='tight')
+    figs_table = table_summary_plot(df,atlas_names_list,atlas_names_list_full) 
+
+    # save figures if fig_dir is not None
+    if fig_dir is not None:
+        # if directory doesn't exist, create it
+        if not os.path.exists(fig_dir):
+            os.makedirs(fig_dir)
+        fig_chart.savefig(fig_dir + "/circular_barchart.png", dpi=300, bbox_inches='tight')
+        fig_spider.savefig(fig_dir + "/circular_atlases_all.png", dpi=300, bbox_inches='tight')
+        for key in figs_table:
+            figs_table[key].savefig(fig_dir + "/table_summary_plot" + str(key) + ".png", dpi=300, bbox_inches='tight')
