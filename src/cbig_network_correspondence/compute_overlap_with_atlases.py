@@ -2,6 +2,7 @@
 import copy
 from os import path
 from os import listdir
+from os import makedirs
 from natsort import natsorted
 import numpy as np
 import nibabel as nib
@@ -10,6 +11,8 @@ import pickle
 from . import grab_data_info as grab_info
 from . import visualize_overlap_lib as vis
 from scipy.io import loadmat
+from regfusion import vol_to_fsaverage
+import pandas as pd
 
 # define path
 PROJECT_PATH = path.dirname(path.abspath(__file__))
@@ -109,8 +112,12 @@ def read_file(data_path):
     if path.isfile(data_path):
         if ".mat" in data_path:
             mat_data = loadmat(data_path)
-            mat_data_lh = mat_data.get('lh_labels')
-            mat_data_rh = mat_data.get('rh_labels')
+            for key in mat_data:
+                # find variable in the mat file with name starting with "lh" or "rh"
+                if key.startswith('lh'):
+                    mat_data_lh = mat_data.get(key)
+                elif key.startswith('rh'):
+                    mat_data_rh = mat_data.get(key)
             # Transpose lh_labels and rh_labels if needed
             if mat_data_lh.shape[0] < mat_data_lh.shape[1]:
                 mat_data_lh = mat_data_lh.T
@@ -122,6 +129,9 @@ def read_file(data_path):
         elif ".nii" in data_path:
             nii_img = nib.load(data_path)
             data = nii_img.get_fdata()
+            if data.shape[-1] == 1:
+                # Remove the singleton dimension
+                data = np.squeeze(data, axis=-1)
 
     return data
 
@@ -201,6 +211,76 @@ def read_atlas(params):
 
     return data
 
+def proj_atlas(params):
+    """
+    Project FSLMNI152 atlas to the surface space
+
+    self.project_path = project_path
+    self.atlases_path = atlases_path
+    self.network_assign_path = network_assign_path
+    params.config:
+    - params.config.category:
+        the categopry of atlas or data
+    - params.config.name:
+        the name of atlas or data
+    - params.config.space:
+        the space of atlas or data
+    - params.config.type:
+        the data type of atlas or data
+    - params.config.netassign: [optional]
+        the network assignment flag of atlas or data
+    - params.config.threshold: [optional]
+        the threshold of soft parcellation or metric data
+    """
+
+    if params.config.type == 'Hard':
+        print('This is a hard parcellation.')
+        params.data_sort_path = sort_files(params.data_path, params.config.name)
+        #get the parent directory of the data
+        out_path = path.dirname(params.data_sort_path[0])
+        temp_path = path.join(out_path, "temp")
+        #create temp directory if it does not exist
+        if not path.exists(temp_path):
+            makedirs(temp_path)
+        lh, rh = vol_to_fsaverage(params.data_sort_path[0], temp_path)
+        lh_data = nib.load(lh)
+        rh_data = nib.load(rh)
+        lh_data_fs = lh_data.get_fdata()
+        rh_data_fs = rh_data.get_fdata()
+        #extract first 40962 elements from lh_data_fs and rh_data_fs
+        lh_data_fs = lh_data_fs[:40962]
+        rh_data_fs = rh_data_fs[:40962]
+        data = np.concatenate((lh_data_fs, rh_data_fs), axis=0)
+        data = np.squeeze(data)
+        data = np.reshape(data, (data.shape[0], 1))
+        out_path = path.join(temp_path, 'input_data.npy')
+        np.save(out_path, data)
+
+    elif params.config.type in ('Soft', 'Metric'):
+        print('This is a soft parcellation or metric data.')
+        data = []        
+        params.data_sort_path = sort_files(params.data_path, params.config.name)
+        out_path = path.dirname(params.data_sort_path[0])
+        temp_path = path.join(out_path, "temp")
+        out_path = path.join(out_path, "temp", "surf_data")
+        #create temp directory if it does not exist
+        if not path.exists(out_path):
+            makedirs(out_path)
+        for curr_data_file in params.data_sort_path:
+            lh, rh = vol_to_fsaverage(curr_data_file, temp_path)
+            lh_data = nib.load(lh)
+            rh_data = nib.load(rh)
+            lh_data_fs = lh_data.get_fdata()
+            rh_data_fs = rh_data.get_fdata()
+            #extract first 40962 elements from lh_data_fs and rh_data_fs
+            lh_data_fs = lh_data_fs[:40962]
+            rh_data_fs = rh_data_fs[:40962]
+            curr_data = np.concatenate((lh_data_fs, rh_data_fs), axis=0)
+            curr_data = np.squeeze(curr_data)
+            curr_data = np.reshape(curr_data, (curr_data.shape[0], 1))
+            np.save(path.join(out_path, path.basename(curr_data_file) + '_input_data.npy'), curr_data)
+
+    return out_path
 
 def dice_coeff(net1, net2):
     """
@@ -309,6 +389,7 @@ def compute_overlap_spin(ref_params, other_params):
         hemi_size = 40962
     elif ref_params.config.space == "fs_LR_32k":
         hemi_size = 32492
+    
     
     other_params.config.space = copy.deepcopy(ref_params.config.space)
     orig_ref_data = read_atlas(ref_params)
@@ -422,13 +503,20 @@ def permute_overlap_data_all(data_params, atlas_names):
     """
     Computes overlap matrix for a given data and all existing atlases
     """
+    # if data is in volume project it to surface
+    if data_params.config.space == "FSLMNI2mm":
+        data_params.config.space = "fsaverage6"
+        data_params.config.name = "input_data"
+        data_path = proj_atlas(data_params)
+        data_params.data_path = data_path
+
     if atlas_names is None:
         # Reads in the atlas in the same space as the data
         atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
         atlas_names = atlas_list_file.read().splitlines()
     p_val = {}
     for atlas_name in atlas_names:
-        print("Computing overlap with " + atlas_name)
+        print("Performing permutation with " + atlas_name)
         atlas_params = AtlasParams(atlas_name, data_params.config.space)
         
         # Compute the overlap matrix between data and the atlas
@@ -517,5 +605,22 @@ def obtain_overlap_atlases(ref_atlas_name, other_atlas_name,
     return overlap_data
 
 
+def network_correspondence(ref_params, atlas_names_list):
+    overlap_mat_all = compute_overlap_data_all(ref_params, atlas_names_list)
+    p_val = permute_overlap_data_all(ref_params, atlas_names_list)
+    network_names = vis.construct_network_name_all(atlas_names_list)
 
+    df1 = pd.DataFrame([(key, value) for key, values in overlap_mat_all.items() for value in values], columns=['group', 'dice'])
+    #flatten df1
+    df1 = df1.explode('dice')
+    df1 = df1.reset_index(drop=True)
+    df2 = pd.DataFrame([(key, value) for key, values in network_names.items() for value in values], columns=['group', 'name'])
+    df3 = pd.DataFrame([(key, value) for key, values in p_val.items() for value in values], columns=['group', 'p_value'])
+    df3 = df3.explode('p_value')
+    df3 = df3.reset_index(drop=True)
+
+    df = pd.concat([df1,df2['name'],df3['p_value']],1)
+    df = df[['group','name','dice','p_value']]
+
+    return df
 

@@ -105,6 +105,7 @@ def check_args_format(args):
                          "e.g., probability map, task contrast map.")
     if args.netassign is None:
         print("Data_NetworkAssignment is not specified.")
+        args.netassign = False
     if args.threshold is None:
         if args.type == 'Soft':
             args.threshold = thresh_str_to_num('[0, Inf]')
