@@ -1,0 +1,816 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+      
+        <link rel="next" href="api_docs/">
+      
+      
+      <link rel="icon" href="assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.5.3, mkdocs-material-9.5.15">
+    
+    
+      
+        <title>cbig_network_correspondence</title>
+      
+    
+    
+      <link rel="stylesheet" href="assets/stylesheets/main.7e359304.min.css">
+      
+        
+        <link rel="stylesheet" href="assets/stylesheets/palette.06af60db.min.css">
+      
+      
+
+
+    
+    
+      
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+      <link rel="stylesheet" href="assets/_mkdocstrings.css">
+    
+    <script>__md_scope=new URL(".",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+      
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo">
+  
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#cbig_network_correspondence" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+  
+
+<header class="md-header md-header--shadow" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href="." title="cbig_network_correspondence" class="md-header__button md-logo" aria-label="cbig_network_correspondence" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            cbig_network_correspondence
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Introduction
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+      
+        <form class="md-header__option" data-md-component="palette">
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 6H7c-3.31 0-6 2.69-6 6s2.69 6 6 6h10c3.31 0 6-2.69 6-6s-2.69-6-6-6zm0 10H7c-2.21 0-4-1.79-4-4s1.79-4 4-4h10c2.21 0 4 1.79 4 4s-1.79 4-4 4zM7 9c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7H7a5 5 0 0 0-5 5 5 5 0 0 0 5 5h10a5 5 0 0 0 5-5 5 5 0 0 0-5-5m0 8a3 3 0 0 1-3-3 3 3 0 0 1 3-3 3 3 0 0 1 3 3 3 3 0 0 1-3 3Z"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var media,input,key,value,palette=__md_get("__palette");if(palette&&palette.color){"(prefers-color-scheme)"===palette.color.media&&(media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']"),palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent"));for([key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+      <div class="md-header__source">
+        <a href="https://github.com/rubykong/cbig_network_correspondence" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+      </div>
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href="." title="cbig_network_correspondence" class="md-nav__button md-logo" aria-label="cbig_network_correspondence" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    cbig_network_correspondence
+  </label>
+  
+    <div class="md-nav__source">
+      <a href="https://github.com/rubykong/cbig_network_correspondence" title="Go to repository" class="md-source" data-md-component="source">
+  <div class="md-source__icon md-icon">
+    
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><!--! Font Awesome Free 6.5.1 by @fontawesome - https://fontawesome.com License - https://fontawesome.com/license/free (Icons: CC BY 4.0, Fonts: SIL OFL 1.1, Code: MIT License) Copyright 2023 Fonticons, Inc.--><path d="M439.55 236.05 244 40.45a28.87 28.87 0 0 0-40.81 0l-40.66 40.63 51.52 51.52c27.06-9.14 52.68 16.77 43.39 43.68l49.66 49.66c34.23-11.8 61.18 31 35.47 56.69-26.49 26.49-70.21-2.87-56-37.34L240.22 199v121.85c25.3 12.54 22.26 41.85 9.08 55a34.34 34.34 0 0 1-48.55 0c-17.57-17.6-11.07-46.91 11.25-56v-123c-20.8-8.51-24.6-30.74-18.64-45L142.57 101 8.45 235.14a28.86 28.86 0 0 0 0 40.81l195.61 195.6a28.86 28.86 0 0 0 40.8 0l194.69-194.69a28.86 28.86 0 0 0 0-40.81z"/></svg>
+  </div>
+  <div class="md-source__repository">
+    GitHub
+  </div>
+</a>
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+  
+  
+    
+  
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="." class="md-nav__link md-nav__link--active">
+        
+  
+  <span class="md-ellipsis">
+    Introduction
+  </span>
+  
+
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#atlases-we-included" class="md-nav__link">
+    <span class="md-ellipsis">
+      Atlases we included
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Config file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-and-visualize-network-overlap-between-two-existing-alases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compute and visualize network overlap between two existing alases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-and-visualize-overlap-between-any-metric-data-and-an-existing-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compute and visualize overlap between any metric data and an existing atlas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="api_docs/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    API documentation
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#installation" class="md-nav__link">
+    <span class="md-ellipsis">
+      Installation
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#usage" class="md-nav__link">
+    <span class="md-ellipsis">
+      Usage
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#atlases-we-included" class="md-nav__link">
+    <span class="md-ellipsis">
+      Atlases we included
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#config-file" class="md-nav__link">
+    <span class="md-ellipsis">
+      Config file
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-and-visualize-network-overlap-between-two-existing-alases" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compute and visualize network overlap between two existing alases
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#compute-and-visualize-overlap-between-any-metric-data-and-an-existing-atlas" class="md-nav__link">
+    <span class="md-ellipsis">
+      Compute and visualize overlap between any metric data and an existing atlas
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#development" class="md-nav__link">
+    <span class="md-ellipsis">
+      Development
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+  
+  
+
+
+<h1 id="cbig_network_correspondence">cbig_network_correspondence</h1>
+<p><a href="https://pypi.python.org/pypi/cbig_network_correspondence/"><img alt="PyPI" src="https://img.shields.io/pypi/v/cbig_network_correspondence?style=flat-square" /></a>
+<a href="https://pypi.python.org/pypi/cbig_network_correspondence/"><img alt="PyPI - Python Version" src="https://img.shields.io/pypi/pyversions/cbig_network_correspondence?style=flat-square" /></a>
+<a href="https://pypi.python.org/pypi/cbig_network_correspondence/"><img alt="PyPI - License" src="https://img.shields.io/pypi/l/cbig_network_correspondence?style=flat-square" /></a>
+<a href="https://github.com/woltapp/wolt-python-package-cookiecutter"><img alt="Coookiecutter - Wolt" src="https://img.shields.io/badge/cookiecutter-Wolt-00c2e8?style=flat-square&amp;logo=cookiecutter&amp;logoColor=D4AA00&amp;link=https://github.com/woltapp/wolt-python-package-cookiecutter" /></a></p>
+<hr />
+<p><strong>Documentation</strong>: <a href="https://rubykong.github.io/cbig_network_correspondence">https://rubykong.github.io/cbig_network_correspondence</a></p>
+<p><strong>Source Code</strong>: <a href="https://github.com/rubykong/cbig_network_correspondence">https://github.com/rubykong/cbig_network_correspondence</a></p>
+<p><strong>PyPI</strong>: <a href="https://pypi.org/project/cbig_network_correspondence/">https://pypi.org/project/cbig_network_correspondence/</a></p>
+<hr />
+<p>This toolbox was used to explore the network correspondence between networks across different atlases. </p>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-sh">pip install cbig_network_correspondence
+</code></pre>
+<h2 id="usage">Usage</h2>
+<p>This toolbox has the following functions:</p>
+<ul>
+<li>Compute and visualize network overlap between two existing alases</li>
+<li>Compute and visualize overlap between any metric data (e.g. task contrast map, probability map, other atlas) and an existing atlas</li>
+<li>Visualze the overlapping area between two atlases or a metric data and an atlas</li>
+</ul>
+<p>We will provide detailed usage of these function in the following sections.</p>
+<h3 id="atlases-we-included">Atlases we included</h3>
+<p>Check this list for the atlases we have included. We use abbreviations for the atlases. Here we provide the decription for each atlas. If you want us to include your atlas, please contact me (roo.cone@gmail.com).</p>
+<p><img alt="networkcorrespondence" src="https://github.com/rubykong/cbig_network_correspondence_data/assets/20438248/b430f2fe-4b78-49f2-9084-5a43d450dba1" /></p>
+<p>These atlases should be automatically downloaded when you install the toolbox. If you want to download the atlases manually, you can find the atlases here: https://github.com/rubykong/cbig_network_correspondence_data. The atlas data will be automatically downloaded in your python package directory: <code>cbig_network_correspondence/src/cbig_network_correspondence/data</code>.</p>
+<h3 id="config-file">Config file</h3>
+<p>In this toolbox, the information for each atlas was constructed as config file. We have included the config files for each atlas. The config files will be automatically downloaded when you install the toolbox. If you want to check the config files manually, you can find the config files in your python package directory: <code>cbig_network_correspondence/src/cbig_network_correspondence/data/atlas_config</code>. If you want to use your own atlas, you can create your own config file, check next sections for details. </p>
+<p>The config file should be a text file. </p>
+<p>Here is an example of the config file for the Schaefer 400-ROI atlas with Yeo 17-network network assignemnt <code>AS400Y17</code>:</p>
+<pre><code>[data_info]
+Data_Category: YeoLab
+Data_Name: AS400Y17
+Data_Space: fsaverage6
+Data_Type: Hard
+Data_NetworkAssignment: 1
+</code></pre>
+<p>Here is an example of the config file for a example metric data <code>Exemplar1(pos)</code>:</p>
+<pre><code>[data_info]
+Data_Name: Exemplar1(pos)
+Data_Space: FSLMNI2mm
+Data_Type: Metric
+Data_Threshold: [5,Inf]
+</code></pre>
+<p>Here is the decription for the config file:</p>
+<ul>
+<li><code>Data_Category</code> [optional]</li>
+</ul>
+<p>We included it for existing atlases because some atlases were from the same lab. In this case, we put the some atlases into the same category. This is not necessary for your own atlas or your own metric data.</p>
+<ul>
+<li><code>Data_Name</code></li>
+</ul>
+<p>The name of the atlas or metric data.</p>
+<ul>
+<li><code>Data_Space</code></li>
+</ul>
+<p>The space name of the space where the atlas/data is in. It can be a surface name or a volumetric space name. We currenly have atlases in the following spaces: <code>fs_LR_32k</code> surface space, <code>fsaverage6</code> surface space, <code>FSLMNI2mm</code> volumetric space, <code>LairdColin2mm</code> volumetric space, <code>ShenColin1mm</code> volumetric space.</p>
+<ul>
+<li><code>Data_Type</code></li>
+</ul>
+<p>The type of the atlas/data. We have two types of atlas: <code>Hard</code> and <code>Soft</code>. The <code>Hard</code> atlas is the atlas that each ROI is assigned to a specific network. The <code>Soft</code> atlas is the atlas that each ROI is assigned to a probability of belonging to each network. We also allow for a metric data such as task contrast maps or probability maps, in this case <code>Data_Type</code> should be <code>Metric</code>. </p>
+<ul>
+<li><code>Data_NetworkAssignment</code> [optional]</li>
+</ul>
+<p>Sometimes the atlas has fine-grained ROIs and these ROIs were assigned to large-scale networks. For example, the Schaefer2018 400 ROIs were assigned to the Yeo 17-network atlas. In this case the user can provide a mapping between ROIs to networks, here you can find the mapping for some of the existing atlases: https://github.com/rubykong/cbig_network_correspondence_data/tree/master/network_assignment</p>
+<ul>
+<li><code>Data_Threshold</code> [optional]</li>
+</ul>
+<p>For soft parcellation and metric data, we will need to apply a threshold to binarize the data. The threshold should be set as <code>[lower bound, upper bound]</code>. If the upper bound is <code>Inf</code>, then the threshold will be applied as <code>&gt;= lower bound</code>. If the lower bound is <code>-Inf</code>, then the threshold will be applied as <code>&lt;= upper bound</code>. If the <code>Data_Type</code> is <code>Soft</code> or <code>Metric</code>, but the <code>Data_Threshold</code> is not provided, the toolbox will use a default threshold <code>[0, Inf]</code>. <code>Data_Threshold</code> is not necessary for <code>Hard</code> atlas.</p>
+<p>After importing the toolbox, here are the relevant commands. After decribing the commands, we provide examples for how to use this toolbox. We also provided a jupyter notebook for the examples: ExampleUsage.ipynb. Please note that the output figure path were hard-coded in the notebook, so you might need to change the output figure path to your own path.</p>
+<pre><code class="language-python">import cbig_network_correspondence as cnc
+</code></pre>
+<pre><code>overlap_mat = cnc.compute_overlap_with_atlases.load_overlap_atlases(ref_atlas_name, other_atlas_name)
+
+This function will load the pre-computed network overlap matrix between the reference atlas and the other atlas.
+
+Input:
+- ref_atlas_name: the name of the reference atlas
+- other_atlas_name: the name of the other atlas
+
+Output:
+- overlap_mat: the network overlap matrix between the reference atlas and the other atlas
+</code></pre>
+<pre><code>cnc.visualize_overlap_lib.draw_overlap_mat(overlap_mat, ref_atlas_name, other_atlas_name, minv, maxv, outputfigfile)
+
+This function will draw the network overlap matrix between the reference atlas and the other atlas. In this function, the user can pass in the loaded overlap matrix from cnc.compute_overlap_with_atlases.load_overlap_atlases.
+
+Input:
+- overlap_mat: the network overlap matrix between the reference atlas and the other atlas
+- ref_atlas_name: the name of the reference atlas
+- other_atlas_name: the name of the other atlas
+- minv: the minimum value of the colorbar
+- maxv: the maximum value of the colorbar
+- outputfigfile: the output figure file name
+
+</code></pre>
+<pre><code>cnc.visualize_overlap_lib.draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, outputfigfile)
+
+This function will draw the network overlap matrix between the reference atlas and the other atlas. This function will automatically load the pre-computed network overlap matrix between the reference atlas and the other atlas.
+
+Input:
+- ref_atlas_name: the name of the reference atlas
+- other_atlas_name: the name of the other atlas
+- minv: the minimum value of the colorbar
+- maxv: the maximum value of the colorbar
+- outputfigfile: the output figure file name
+</code></pre>
+<pre><code>overlap_data = cnc.compute_overlap_with_atlases.obtain_overlap_atlases(ref_atlas_name, other_atlas_name, ref_network_name, other_network_name)
+
+This function generate the overlapping area between networks from two atlases. This is used for visualization purpose.
+
+Input:
+- ref_atlas_name: the name of the reference atlas
+- other_atlas_name: the name of the other atlas
+- ref_network_name: the name of the reference network
+- other_network_name: the name of the other network
+
+Note that you can find the network names for each atlas here:
+https://github.com/rubykong/cbig_network_correspondence_data/tree/master/network_names
+
+Output:
+- overlap_data: a numpy array in the same space as the reference atlas. The array contains three labels: 1, 2, 3.
+1 indicates the reference network, 2 indicates the other network, 3 indicates the overlapping area between the two networks.
+</code></pre>
+<pre><code>cnc.visualize_overlap_lib.draw_overlap_map(data_space, overlap_data, outputfigfile, coords)
+
+This function visualize the overlapping area between networks from two atlases. The reference network will be colored in pink, the other network will be colored in blue, and the overlapping area will be colored in purple.
+
+Input:
+- data_space: the space of the data. It can be `fsaverage6`, `fs_LR_32k`, `FSLMNI2mm`, `LairdColin2mm`, `ShenColin1mm`
+- overlap_data: a numpy array in the same space as the reference atlas. The array contains three labels: 1, 2, 3. This is the output of cnc.compute_overlap_with_atlases.obtain_overlap_atlases
+- outputfigfile: the output figure file name
+- coords: [for volumetric data only] the coordinates of the point where the cut is performed. BY default, we use [-4, -31, 18].
+</code></pre>
+<pre><code>example = cnc.load_example
+
+This function find the path to the example config and example nifti image
+
+Output:
+- example_config: the path to the example config file
+- example_nii: the path to the example nifti image
+</code></pre>
+<pre><code>data_params = cnc.compute_overlap_with_atlases.DataParams(config_file, data_path)
+
+This function reads in the config information and the data path to construct the parameters for the data
+
+Input:
+- config_file: the path to the config file
+- data_path: the path to the data
+</code></pre>
+<pre><code>overlap_data = cnc.compute_overlap_with_atlases.obtain_overlap_data(data_params, atlas_name, network_name)
+
+This function generate the overlapping area between the binarized data and an existing atlas. This is used for visualization purpose. The calculation is done in the same space as the data.
+
+Input:
+- data_params: the parameters for the data. This is the output of the function cnc.compute_overlap_with_atlases.DataParams
+- atlas_name: the name of the atlas. For example, &quot;MG360J12&quot;.
+- network_name: the name of the network from the atlas. For example, &quot;Default&quot;.
+
+</code></pre>
+<h3 id="compute-and-visualize-network-overlap-between-two-existing-alases">Compute and visualize network overlap between two existing alases</h3>
+<p>In this toolbox, we computes the network overlap between any pair of existing atlases. We treat each atlas as the reference atlas, and projected other atlases to the same space as the reference atlas. Then we compute the network overlap between the reference atlas and the projected atlas.</p>
+<p>Here we provide examples if you want to check the network overlap matrix between the Glasser 2016 atlas with Ji2019 networks and the Yeo 17 networks, you can use the following code:</p>
+<pre><code class="language-python">import  cbig_network_correspondence as cnc
+
+# When Yeo 17-network atlas is the reference atlas, the Glasser2016 atlas will be projected to fsaverage6 surface space
+overlap_mat1 = cnc.compute_overlap_with_atlases.load_overlap_atlases(&quot;TY17&quot;, &quot;MG360J12&quot;)
+
+# When Glasser2016 atlas atlas is the reference atlas, theYeo 17-network atlas will be projected to fs_LR_32k surface space
+overlap_mat2 = cnc.compute_overlap_with_atlases.load_overlap_atlases(&quot;MG360J12&quot;, &quot;TY17&quot;)
+</code></pre>
+<p>If you want to visualize the network overlap matrix, you can use the following code:</p>
+<pre><code class="language-python">cnc.visualize_overlap_lib.draw_overlap_mat(overlap_mat1, &quot;TY17&quot;, &quot;MG360J12&quot;, 0, 1, &quot;&lt;path_to_figure&gt;/TY17_MG360J12&quot;)
+cnc.visualize_overlap_lib.draw_overlap_mat(overlap_mat2, &quot;MG360J12&quot;, &quot;TY17&quot;, 0, 1, &quot;&lt;path_to_figure&gt;/MG360J12_TY17&quot;)
+</code></pre>
+<p>The output figures will be save under the path <code>&lt;path_to_figure&gt;/TY17_MG360J12.png</code> and <code>&lt;path_to_figure&gt;/MG360J12_TY17.png</code>. Here are the corresponding figures. The left side are reference network names, the upper part are the other atlas network names</p>
+<ul>
+<li><code>&lt;path_to_figure&gt;/TY17_MG360J12.png</code> </li>
+</ul>
+<p><img alt="image" src="https://user-images.githubusercontent.com/20438248/232752322-0fbe141f-3879-4c6d-9a04-1dd372753ea0.png" /></p>
+<ul>
+<li><code>&lt;path_to_figure&gt;/MG360J12_TY17.png</code></li>
+</ul>
+<p><img alt="image" src="https://user-images.githubusercontent.com/20438248/232752400-a162a152-043f-48e9-b45d-171bfea6b952.png" /></p>
+<p>However, if you have no interest to check the overlap matrix and just want to see the visualized network overlap between two atlases, you can use the following code:</p>
+<pre><code class="language-python">import  cbig_network_correspondence as cnc
+
+cnc.visualize_overlap_lib.draw_overlap_atlases(&quot;MG360J12&quot;, &quot;TY17&quot;, 0, 1, &quot;&lt;path_to_figure&gt;/MG360J12_TY17&quot;)
+</code></pre>
+<p>If you want to check the brain maps of the overlappping regions between two atlases, you can use the following code:</p>
+<ul>
+<li>To check the overlapping regions between the <code>Default</code> network from <code>MG360J12</code> atlas and the <code>DefaultA</code> network from <code>TY17</code> atlas:</li>
+</ul>
+<pre><code class="language-python">import  cbig_network_correspondence as cnc
+
+# When Yeo 17-network atlas is the reference atlas
+overlap_data = cnc.compute_overlap_with_atlases.obtain_overlap_atlases(&quot;TY17&quot;, &quot;MG360J12&quot;, &quot;DefaultA&quot;, &quot;Default&quot;)
+# Yeo 17-network atlas is in fsaverage6 surface space
+cnc.visualize_overlap_lib.draw_overlap_map(&quot;fsaverage6&quot;, overlap_data, &quot;&lt;path_to_figures&gt;/TY17_MG360J12_DefaultA_Default&quot;)
+
+# When Glasser2016 atlas atlas is the reference atlas
+overlap_data = cnc.compute_overlap_with_atlases.obtain_overlap_atlases(&quot;MG360J12&quot;, &quot;TY17&quot;, &quot;Default&quot;, &quot;DefaultA&quot;)
+# Glasser2016 atlas is in fs_LR_32k surface space
+cnc.visualize_overlap_lib.draw_overlap_map(&quot;fs_LR_32k&quot;, overlap_data, &quot;&lt;path_to_figures&gt;/MG360J12_TY17_Default_DefaultA&quot;)
+
+</code></pre>
+<p>Here are the results:
+<img alt="Overlap_surface" src="https://user-images.githubusercontent.com/20438248/232758349-ad5157cd-d6c2-4d4c-880c-7dda3a36fe0b.jpg" /></p>
+<h3 id="compute-and-visualize-overlap-between-any-metric-data-and-an-existing-atlas">Compute and visualize overlap between any metric data and an existing atlas</h3>
+<p>In this toolbox, we also allow users to upload their own data and compute the network overlap between the data and an existing atlas. We treat the data as the reference, and projected the atlas to the same space as the reference data. For a metric data, we binarize the data use <code>Data_Threshold</code>, then we compute the network overlap between the binarized data and the projected atlas. Here we provide an example data to show you how to use this toolbox.</p>
+<p>After importing the toolbox, here are the relevant commands. After decribing the commands, we provide examples for how to use this toolbox to compute and visualize the overlap between any metric data and an existing atlas.</p>
+<p>You can load the example data by using the following code:</p>
+<pre><code class="language-python">import  cbig_network_correspondence as cnc
+
+example = cnc.load_example
+# the example config file
+print(example.example_config)
+# the path to the example data
+print(example.example_nii)
+# construct parameters for example data
+data_params = cnc.compute_overlap_with_atlases.DataParams(example.example_config, example.example_nii)
+</code></pre>
+<p>In this example, we will compute the overlap between thie example data and the Glasser2016 atlas. Since the example data is in FSLMNI2mm space, we will project the Glasser2016 atlas to FSLMNI2mm space and compute the overlap matrix.</p>
+<pre><code class="language-python">overlap_mat = cnc.compute_overlap_with_atlases.compute_overlap_data(data_params, &quot;MG360J12&quot;)
+</code></pre>
+<p>After that, we can visualize the overlap matrix by using the following code:</p>
+<pre><code class="language-python">cnc.visualize_overlap_lib.draw_overlap_mat(overlap_mat, &quot;Exampler1(pos)&quot;, &quot;MG360J12&quot;, 0, 1, &quot;&lt;path_to_figures&gt;/exampler1_pos_MG360J12&quot;)
+</code></pre>
+<p>Here is how the overlap matrix looks like:
+<img alt="image" src="https://user-images.githubusercontent.com/20438248/232759475-2eae4dad-0f7c-40d0-afe3-bd4731466542.png" /></p>
+<p>Based on the visualized overlap matrix, we can notice that the example data overlapped the most with the <code>Default</code> network from Glasser2016. If we want to check the overlapping regions between the example data and the <code>Default</code> network from Glasser2016, we can use the following code:</p>
+<pre><code class="language-python">overlap_data = cnc.compute_overlap_with_atlases.obtain_overlap_data(data_params, 'MG360J12', 'Default')
+# By default we use coords=[-4, -31, 18] to visualize volumetric data, you can change it to any other coordinates
+cnc.visualize_overlap_lib.draw_overlap_map(&quot;FSLMNI2mm&quot;, overlap_data, &quot;&lt;path_to_figures&gt;/example_MG360J12_Default&quot;, [-4, -31, 18])
+</code></pre>
+<p>Here is the result:
+<img alt="image" src="https://user-images.githubusercontent.com/20438248/232760522-f1327b70-2bc7-4b74-bdf2-30274146bfa6.png" /></p>
+<h2 id="development">Development</h2>
+<ul>
+<li>Clone this repository</li>
+<li>Requirements:</li>
+<li><a href="https://python-poetry.org/">Poetry</a></li>
+<li>Python 3.7+</li>
+<li>Create a virtual environment and install the dependencies</li>
+</ul>
+<pre><code class="language-sh">poetry install
+</code></pre>
+<ul>
+<li>Activate the virtual environment</li>
+</ul>
+<pre><code class="language-sh">poetry shell
+</code></pre>
+<hr />
+<p>This project was generated using the <a href="https://github.com/woltapp/wolt-python-package-cookiecutter">wolt-python-package-cookiecutter</a> template.</p>
+
+
+
+
+
+
+
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+<script>var target=document.getElementById(location.hash.slice(1));target&&target.name&&(target.checked=target.name.startsWith("__tabbed_"))</script>
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    
+    <script id="__config" type="application/json">{"base": ".", "features": [], "search": "assets/javascripts/workers/search.b8dbb3d2.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="assets/javascripts/bundle.bd41221c.min.js"></script>
+      
+    
+  </body>
+</html>
