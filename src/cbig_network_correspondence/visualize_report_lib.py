@@ -13,7 +13,7 @@ from plottable.cmap import normed_cmap
 from plottable.plots import circled_image # image
 from pandas.plotting import table
 import os
-
+from . import visualize_overlap_lib as vis
 
 def dice_percent(val: float) -> str:
     """Formats Numbers to a string, replacing
@@ -625,8 +625,14 @@ def table_summary_atlas(df):
         if key[1] == -1:  # Check if it's a row name cell
             cell.set_text_props(weight='bold')
     plt.show()
+    return fig
 
-def report_network_correspondence(df,atlas_names_list, atlas_names_list_full=None,fig_dir=None):
+def report_data_network_correspondence(df,out_dir,atlas_names_list=None, atlas_names_list_full=None):
+    # if directory doesn't exist, create it
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    if atlas_names_list is None:
+        atlas_names_list = df['group'].unique()
     if atlas_names_list_full is None:
         atlas_names_list_full = atlas_names_list            
     
@@ -637,13 +643,30 @@ def report_network_correspondence(df,atlas_names_list, atlas_names_list_full=Non
     #save figure
     #plt.savefig(fig_dir + "/circular_atlases_all.png", dpi=300, bbox_inches='tight')
     figs_table = table_summary_plot(df,atlas_names_list,atlas_names_list_full) 
+    fig_chart.savefig(out_dir + "/circular_barchart.png", dpi=300, bbox_inches='tight')
+    fig_spider.savefig(out_dir + "/circular_atlases_all.png", dpi=300, bbox_inches='tight')
+    for key in figs_table:
+        figs_table[key].savefig(out_dir + "/table_summary_plot" + str(key) + ".png", dpi=300, bbox_inches='tight')
+    # export to csv
+    df.to_csv(out_dir + "/network_correspondence.csv")
 
-    # save figures if fig_dir is not None
-    if fig_dir is not None:
-        # if directory doesn't exist, create it
-        if not os.path.exists(fig_dir):
-            os.makedirs(fig_dir)
-        fig_chart.savefig(fig_dir + "/circular_barchart.png", dpi=300, bbox_inches='tight')
-        fig_spider.savefig(fig_dir + "/circular_atlases_all.png", dpi=300, bbox_inches='tight')
-        for key in figs_table:
-            figs_table[key].savefig(fig_dir + "/table_summary_plot" + str(key) + ".png", dpi=300, bbox_inches='tight')
+def report_atlas_network_correspondence(combined_data,ref_atlas_name,out_dir):
+    # if directory doesn't exist, create it
+    if not os.path.exists(out_dir):
+        os.makedirs(out_dir)
+    vis.draw_overlap_mat_all(combined_data, ref_atlas_name, figfile=out_dir)
+    reference_name = vis.construct_network_name(ref_atlas_name)
+    #for each key in combined_data, generate a table_summary_plot
+    for key in combined_data:
+        curr_data = combined_data[key]
+        curr_dice = curr_data['Dice']
+        curr_pval = curr_data['P value']
+        
+        other_name = vis.construct_network_name(key)
+        new_array = np.array([f'{a:.4f}\n(p={b:.4f})' for a, b in zip(curr_dice.flatten(), curr_pval.flatten())]).reshape(curr_dice.shape)
+        df = pd.DataFrame(new_array, index=reference_name, columns=other_name)
+        fig_table = table_summary_atlas(df)
+        
+        fig_table.savefig(out_dir + "/table_summary_plot_" + key + ".png", dpi=300, bbox_inches='tight')
+        # export to csv
+        df.to_csv(out_dir + "/network_correspondence_" + key + ".csv")

@@ -10,6 +10,7 @@ from brainspace.null_models import SpinPermutations
 import pickle
 from . import grab_data_info as grab_info
 from . import visualize_overlap_lib as vis
+from . import visualize_report_lib as vis_report
 from scipy.io import loadmat
 from regfusion import vol_to_fsaverage
 import pandas as pd
@@ -282,6 +283,14 @@ def proj_atlas(params):
 
     return out_path
 
+def if_atlas_exist(atlas_name):
+    atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+    atlas_names = atlas_list_file.read().splitlines()
+    if atlas_name in atlas_names:
+        return True
+    else:
+        return False
+
 def dice_coeff(net1, net2):
     """
     Computes Dice coefficient between two arrays
@@ -494,6 +503,9 @@ def compute_overlap_data_all(data_params, atlas_names=None):
     overlap_val = {}
     for atlas_name in atlas_names:
         print("Computing overlap with " + atlas_name)
+        if not if_atlas_exist(atlas_name):
+            print("Atlas " + atlas_name + " does not exist.")
+            sys.exit(1)
         atlas_params = AtlasParams(atlas_name, data_params.config.space)
         # Compute the overlap matrix between data and the atlas
         overlap_val[atlas_name] = compute_overlap(data_params, atlas_params)
@@ -506,7 +518,7 @@ def permute_overlap_data_all(data_params, atlas_names):
     # if data is in volume project it to surface
     if data_params.config.space == "FSLMNI2mm":
         data_params.config.space = "fsaverage6"
-        data_params.config.name = "input_data"
+        #data_params.config.name = "input_data"
         data_path = proj_atlas(data_params)
         data_params.data_path = data_path
 
@@ -514,9 +526,15 @@ def permute_overlap_data_all(data_params, atlas_names):
         # Reads in the atlas in the same space as the data
         atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
         atlas_names = atlas_list_file.read().splitlines()
+    elif isinstance(atlas_names, str):
+        atlas_names = [atlas_names]
     p_val = {}
     for atlas_name in atlas_names:
         print("Performing permutation with " + atlas_name)
+        if not if_atlas_exist(atlas_name):
+            print("Atlas " + atlas_name + " does not exist.")
+            sys.exit(1)
+
         atlas_params = AtlasParams(atlas_name, data_params.config.space)
         
         # Compute the overlap matrix between data and the atlas
@@ -605,8 +623,16 @@ def obtain_overlap_atlases(ref_atlas_name, other_atlas_name,
     return overlap_data
 
 
-def network_correspondence(ref_params, atlas_names_list):
+def data_network_correspondence(ref_params, atlas_names_list):
     overlap_mat_all = compute_overlap_data_all(ref_params, atlas_names_list)
+    # check the dictionary overlap_mat_all items
+    # for item inside overlap_mat_all.items(), key is the atlas name, value is the overlap matrix
+    # the overlap matrix should be a 1xN matrix, where N is the number of networks in the atlas
+    # throw error message if the matrix is not 1xN
+    for key, value in overlap_mat_all.items():
+        if value.shape[0] != 1:
+            print("ERROR! The overlap matrix for atlas " + key + " is not a 1xN matrix.")
+            sys.exit(1)
     p_val = permute_overlap_data_all(ref_params, atlas_names_list)
     network_names = vis.construct_network_name_all(atlas_names_list)
 
@@ -624,3 +650,67 @@ def network_correspondence(ref_params, atlas_names_list):
 
     return df
 
+def atlas_network_correspondence(ref_params, atlas_names_list):
+    # if ref_params is a string of atlas name
+    if isinstance(ref_params, str):
+        ref_params = RefAtlasParams(ref_params)
+    overlap_mat = compute_overlap_data_all(ref_params, atlas_names_list)
+    p_val = permute_overlap_data_all(ref_params, atlas_names_list)
+    combined_data = {key: {'Dice': overlap_mat[key], 'P value': p_val[key]} for key in overlap_mat}
+    
+    return combined_data
+
+def network_correspondence(ref_input, atlas_names_list,out_dir,ref_networks=None):
+    # if ref_params is a string of atlas name
+    if isinstance(ref_input, str):
+        ref_params = RefAtlasParams(ref_input)
+    elif isinstance(ref_input, DataParams):
+        ref_params = ref_input
+
+    overlap_mat_all = compute_overlap_data_all(ref_params, atlas_names_list)
+    # check the dictionary overlap_mat_all items
+    # for item inside overlap_mat_all.items(), key is the atlas name, value is the overlap matrix
+    # the overlap matrix should be a 1xN matrix, where N is the number of networks in the atlas
+    # throw error message if the matrix is not 1xN
+    single_flag = True
+    for key, value in overlap_mat_all.items():
+        if value.shape[0] != 1:
+            single_flag = False
+            if ref_networks is None:
+                print("ERROR! The overlap matrix for atlas " + key + " has multiple dimensions.")
+                print("Please provide the reference networks names to visualize network correspondence as heatmap.")
+                sys.exit(1)
+    p_val = permute_overlap_data_all(ref_params, atlas_names_list)
+
+    if single_flag:
+        print("Single dimension data is provided. Visualize network correspondence as circular chart.")
+        network_names = vis.construct_network_name_all(atlas_names_list)
+        df1 = pd.DataFrame([(key, value) for key, values in overlap_mat_all.items() for value in values], columns=['group', 'dice'])
+        #flatten df1
+        df1 = df1.explode('dice')
+        df1 = df1.reset_index(drop=True)
+        df2 = pd.DataFrame([(key, value) for key, values in network_names.items() for value in values], columns=['group', 'name'])
+        df3 = pd.DataFrame([(key, value) for key, values in p_val.items() for value in values], columns=['group', 'p_value'])
+        df3 = df3.explode('p_value')
+        df3 = df3.reset_index(drop=True)
+
+        df = pd.concat([df1,df2['name'],df3['p_value']],1)
+        df = df[['group','name','dice','p_value']]
+        vis_report.report_data_network_correspondence(df,out_dir)
+    else:
+        print("Multiple dimension data are provided. Visualize network correspondence as heatmap.")
+        combined_data = {key: {'Dice': overlap_mat_all[key], 'P value': p_val[key]} for key in overlap_mat_all}
+        if ref_networks is not None:
+            ref_networks_data = ref_networks
+        else:
+            print("ref_networks is not provided. Use ref_input to get the reference network data.")
+            if isinstance(ref_input, str):
+                ref_networks_data = ref_input
+            elif isinstance(ref_input, DataParams):
+                ref_networks_data = ref_input.config.name
+            else:
+                # print error
+                print("ERROR! Cannot get reference networks based on ref_input. Please provide a valid reference network data.")
+                sys.exit(1)
+        vis_report.report_atlas_network_correspondence(combined_data,ref_networks_data,out_dir)
+        
