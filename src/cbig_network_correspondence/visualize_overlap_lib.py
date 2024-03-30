@@ -75,7 +75,7 @@ def construct_network_name(atlas_input):
         network_names = None
     return network_names
 
-def draw_overlap_mat(overlap_data_info, ref_atlas_name, other_atlas_name, minv, maxv, figfile):
+def draw_overlap_mat(overlap_data_info, ref_atlas_name, other_atlas_name, minv=0, maxv=1, figfile=None):
     """
     Draw a given overlap matrix. 
     """
@@ -138,14 +138,30 @@ def draw_overlap_mat(overlap_data_info, ref_atlas_name, other_atlas_name, minv, 
     
     plt.tight_layout()
     plt.ioff()
-    plt.savefig(figfile, dpi=200, bbox_inches='tight')
+    if figfile is not None:
+        plt.savefig(figfile, dpi=300, bbox_inches='tight')
 
 
-def draw_overlap_mat_all(overlap_data_all, ref_atlas_name, minv, maxv, figfile):
-    atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
-    atlas_names = atlas_list_file.read().splitlines()
+def draw_overlap_mat_all(overlap_data_all, ref_atlas_name, atlas_names_list=None, minv=0, maxv=1, figfile=None):
+    if atlas_names_list is None:
+        # atlas names list should be keys of overlap_data_all
+        atlas_names = list(overlap_data_all.keys())
+    else:
+        # if atlas_names_list is a string
+        if isinstance(atlas_names_list, str):
+            # if the string is a path to a file
+            if path.isfile(atlas_names_list):
+                atlas_list_file = open(atlas_names_list,"r", encoding="utf8")
+                atlas_names = atlas_list_file.read().splitlines()
+            else:
+                atlas_names = [atlas_names_list]
+        elif isinstance(atlas_names_list, list):
+            atlas_names = atlas_names_list
     for other_atlas_name in atlas_names:
-        figfile_new = figfile + "_" + other_atlas_name
+        if figfile is None:
+            figfile_new = None
+        else:
+            figfile_new = figfile + "/overlap_mat_" + other_atlas_name
         overlap_data = overlap_data_all[other_atlas_name]
         draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile_new)
 
