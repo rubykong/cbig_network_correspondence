@@ -654,8 +654,14 @@ def report_atlas_network_correspondence(combined_data,ref_atlas_name,out_dir):
     # if directory doesn't exist, create it
     if not os.path.exists(out_dir):
         os.makedirs(out_dir)
-    vis.draw_overlap_mat_all(combined_data, ref_atlas_name, figfile=out_dir)
     reference_name = vis.construct_network_name(ref_atlas_name)
+    iter_data = iter(combined_data.items())
+    firstkey , firstvalue = next(iter_data)
+    data_dim = firstvalue['Dice'].shape[0]
+    # if reference_name length is 1, add index to reference_name
+    if len(reference_name) == 1:
+        reference_name = [reference_name[0] + str(i+1) for i in range(data_dim)]
+    vis.draw_overlap_mat_all(combined_data, reference_name, figfile=out_dir)
     #for each key in combined_data, generate a table_summary_plot
     for key in combined_data:
         curr_data = combined_data[key]

@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.1.4] - 2024-03-30
 ### Added
 - Now we can use a single command to generate everything
+- Usage example and readme files are available
 
 ## [0.1.3] - 2024-03-26
 ### Fixed
