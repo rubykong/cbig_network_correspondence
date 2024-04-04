@@ -35,6 +35,11 @@ pip install --upgrade cbig_network_correspondence
 
 ## Usage
 
+### Tutorial
+
+We provide a tutorial for how to use this toolbox. The tutorial is available in the Usage.ipynb notebook:
++ [`Usage.ipynb](https://github.com/rubykong/cbig_network_correspondence/blob/master/Usage.ipynb)
+
 ### Atlases we included
 
 Check this list for the atlases we have included. We use abbreviations for the atlases. Here we provide the decription for each atlas. If you want us to include your atlas, please contact me (roo.cone@gmail.com).
