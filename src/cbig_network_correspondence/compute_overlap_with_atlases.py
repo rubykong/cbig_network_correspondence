@@ -84,7 +84,10 @@ def sort_files(data_path, filename):
     """
     Reads in files under the path and sort the files based on a natural order.
     """
-    if path.isdir(data_path):
+    if isinstance(data_path, list):
+        files_sorted_res = data_path
+        return files_sorted_res 
+    elif path.isdir(data_path):
         allfiles = listdir(data_path)
         files = []
         for eachfile in allfiles:
@@ -254,7 +257,7 @@ def proj_atlas(params):
         data = np.concatenate((lh_data_fs, rh_data_fs), axis=0)
         data = np.squeeze(data)
         data = np.reshape(data, (data.shape[0], 1))
-        out_path = path.join(temp_path, 'input_data.npy')
+        out_path = path.join(temp_path, params.config.name + '.npy')
         np.save(out_path, data)
 
     elif params.config.type in ('Soft', 'Metric'):
@@ -279,7 +282,7 @@ def proj_atlas(params):
             curr_data = np.concatenate((lh_data_fs, rh_data_fs), axis=0)
             curr_data = np.squeeze(curr_data)
             curr_data = np.reshape(curr_data, (curr_data.shape[0], 1))
-            np.save(path.join(out_path, path.basename(curr_data_file) + '_input_data.npy'), curr_data)
+            np.save(path.join(out_path, path.basename(curr_data_file) + params.config.name + '.npy'), curr_data)
 
     return out_path
 
@@ -676,10 +679,6 @@ def network_correspondence(ref_input, atlas_names_list,out_dir,ref_networks=None
     for key, value in overlap_mat_all.items():
         if value.shape[0] != 1:
             single_flag = False
-            if ref_networks is None:
-                print("ERROR! The overlap matrix for atlas " + key + " has multiple dimensions.")
-                print("Please provide the reference networks names to visualize network correspondence as heatmap.")
-                sys.exit(1)
     p_val = permute_overlap_data_all(ref_params, atlas_names_list)
 
     if single_flag:
