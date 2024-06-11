@@ -648,7 +648,7 @@ def data_network_correspondence(ref_params, atlas_names_list):
     df3 = df3.explode('p_value')
     df3 = df3.reset_index(drop=True)
 
-    df = pd.concat([df1,df2['name'],df3['p_value']],1)
+    df = pd.concat([df1,df2['name'],df3['p_value']],axis=1)
     df = df[['group','name','dice','p_value']]
 
     return df
@@ -693,7 +693,7 @@ def network_correspondence(ref_input, atlas_names_list,out_dir,ref_networks=None
         df3 = df3.explode('p_value')
         df3 = df3.reset_index(drop=True)
 
-        df = pd.concat([df1,df2['name'],df3['p_value']],1)
+        df = pd.concat([df1,df2['name'],df3['p_value']],axis=1)
         df = df[['group','name','dice','p_value']]
         vis_report.report_data_network_correspondence(df,out_dir)
     else:

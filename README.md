@@ -20,6 +20,25 @@ This toolbox was used to explore the network correspondence between networks acr
 
 ## Installation
 
+## Python installation
+
+Check here for how to install python: https://realpython.com/installing-python/
+
+### Conda environment
+
+We provide NCT python environment here: [NCT_env](https://github.com/rubykong/cbig_network_correspondence/blob/master/NCT_env.yml). You can create a conda environment using the following command:
+
+```
+conda env create -f NCT_env.yml
+```
+
+To use this environment, activate the environment using the following command:
+
+```
+conda activate NCT_env
+```
+
+## NCT installation
 To install:
 
 ```sh
@@ -32,13 +51,34 @@ To upgrade:
 pip install --upgrade cbig_network_correspondence
 ```
 
+If you don't have pip installed, this [pip installation](https://pip.pypa.io/en/stable/installation/) can guide you through the process.
 
 ## Usage
+
+
+### Quick Example!
+
+Test the toolbox quickly using the example data! Check the last section in [Usage.ipynb](https://github.com/rubykong/cbig_network_correspondence/blob/master/Usage.ipynb) for the results.
+
+```
+import cbig_network_correspondence as cnc
+
+atlas_names_list = ["EG17","MG360J12"]
+example = cnc.load_example
+# the example config file
+print(example.example_config)
+# the path to the example data
+print(example.example_nii)
+ref_params = cnc.compute_overlap_with_atlases.DataParams(example.example_config, example.example_nii)
+cnc.compute_overlap_with_atlases.network_correspondence(ref_params, atlas_names_list,"~/NCTexample/example_results")
+
+```
+
 
 ### Tutorial
 
 We provide a tutorial for how to use this toolbox. The tutorial is available in the Usage.ipynb notebook:
-+ [`Usage.ipynb](https://github.com/rubykong/cbig_network_correspondence/blob/master/Usage.ipynb)
++ [Usage.ipynb](https://github.com/rubykong/cbig_network_correspondence/blob/master/Usage.ipynb)
 
 ### Atlases we included
 
@@ -260,7 +300,7 @@ NCT provides different types of plots to help the user explore/visualize the net
 * Clone this repository
 * Requirements:
   * [Poetry](https://python-poetry.org/)
-  * Python 3.7+
+  * Python 3.9+
 * Create a virtual environment and install the dependencies
 
 ```sh

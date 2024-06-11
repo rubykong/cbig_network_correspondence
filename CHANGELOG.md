@@ -8,6 +8,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [0.2.0] - 2024-04-04
 ### Added
 - Usage example and readme files are available
+- Upgrade pakcgaes to latest versions
 
 ## [0.1.4] - 2024-03-30
 ### Added

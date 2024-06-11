@@ -457,7 +457,7 @@ def table_summary_singleplot(df,atlas_names,atlas_names_fullname):
         if atlas_name == atlas_names[0]:
             df_all = df_curr
         else:
-            df_all = pd.concat([df_all,df_curr],1)
+            df_all = pd.concat([df_all,df_curr],axis=1)
 
     fig, ax = plt.subplots(figsize=(14, 8))
     #dice_list = ["UKBICA","MG360J12"]
