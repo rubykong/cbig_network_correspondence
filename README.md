@@ -106,7 +106,9 @@ Check this list for the atlases we have included. We use abbreviations for the a
 | XY200Y17     | Yan2023; Yeo2011               | Xiaoxuan Yan2023 200-ROI with Yeo2011 17 networks      |
 | XY400K17     | Yan2023; Kong2021              | Xiaoxuan Yan2023 400-ROI with Kong2021 17 networks     |
 | XY400Y17     | Yan2023; Yeo2011               | Xiaoxuan Yan2023 400-ROI with Yeo2011 17 networks      |
-
+| EG5          | Gordon2023                     | Evan Gordon2023 5 networks                             |
+| TW_TASK_NETS | Woodward2024                   | Todd Woodward 2024 12 Task-based Networks              |
+| DU15NET      | Du2024                         | Jingnan Du2024 15 networks                             |
 
 These atlases should be automatically downloaded when you install the toolbox. If you want to download the atlases manually, you can find the atlases here: https://github.com/rubykong/cbig_network_correspondence_data. The atlas data will be automatically downloaded in your python package directory: `cbig_network_correspondence/src/cbig_network_correspondence/data`.
 

@@ -246,7 +246,7 @@ def proj_atlas(params):
         #create temp directory if it does not exist
         if not path.exists(temp_path):
             makedirs(temp_path)
-        lh, rh = vol_to_fsaverage(params.data_sort_path[0], temp_path)
+        lh, rh = vol_to_fsaverage(params.data_sort_path[0], temp_path, interp='nearest')
         lh_data = nib.load(lh)
         rh_data = nib.load(rh)
         lh_data_fs = lh_data.get_fdata()
@@ -282,6 +282,11 @@ def proj_atlas(params):
             curr_data = np.concatenate((lh_data_fs, rh_data_fs), axis=0)
             curr_data = np.squeeze(curr_data)
             curr_data = np.reshape(curr_data, (curr_data.shape[0], 1))
+            if params.config.threshold is not None:
+                th_l = params.config.threshold[0]
+                th_h = params.config.threshold[1]
+                curr_data = np.where(
+                    np.logical_and(curr_data > th_l, curr_data < th_h), 1, 0)
             np.save(path.join(out_path, path.basename(curr_data_file) + params.config.name + '.npy'), curr_data)
 
     return out_path
