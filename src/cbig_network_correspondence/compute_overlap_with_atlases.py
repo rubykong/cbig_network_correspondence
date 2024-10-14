@@ -445,7 +445,7 @@ def compute_overlap_spin(ref_params, other_params):
         elif other_params.config.type in ('Soft', 'Metric'):
             other_net_uni = range(0, len(other_data))
             idx_i = 0
-            overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni)))
+            overlap_val = np.zeros((len(ref_net_uni), len(other_net_uni),1000))
             for each_ref_net in ref_net_uni:
                 curr_ref_net = ref_data_rotated == each_ref_net
                 idx_j = 0
