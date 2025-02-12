@@ -529,6 +529,8 @@ def permute_overlap_data_all(data_params, atlas_names):
         #data_params.config.name = "input_data"
         data_path = proj_atlas(data_params)
         data_params.data_path = data_path
+        #the threshold has to set to None, otherwise the threshold will be applied to the projected data, which is already binarized
+        data_params.config.threshold = None
 
     if atlas_names is None:
         # Reads in the atlas in the same space as the data
