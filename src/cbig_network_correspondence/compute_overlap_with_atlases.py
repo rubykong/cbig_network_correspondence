@@ -3,6 +3,7 @@ import copy
 from os import path
 from os import listdir
 from os import makedirs
+from os import remove
 from natsort import natsorted
 import numpy as np
 import nibabel as nib
@@ -264,12 +265,19 @@ def proj_atlas(params):
         print('This is a soft parcellation or metric data.')
         data = []        
         params.data_sort_path = sort_files(params.data_path, params.config.name)
-        out_path = path.dirname(params.data_sort_path[0])
-        temp_path = path.join(out_path, "temp")
-        out_path = path.join(out_path, "temp", "surf_data")
+        out_dir = path.dirname(params.data_sort_path[0])
+        temp_path = path.join(out_dir, "temp")
+        out_dir = path.join(out_dir, "temp", "surf_data")
+        out_path = []
         #create temp directory if it does not exist
-        if not path.exists(out_path):
-            makedirs(out_path)
+        if not path.exists(out_dir):
+            makedirs(out_dir)
+        else:
+            #remove all files in the directory
+            for each_file in listdir(out_dir):
+                file_path = path.join(out_dir, each_file)
+                if path.isfile(file_path):
+                    remove(file_path)
         for curr_data_file in params.data_sort_path:
             lh, rh = vol_to_fsaverage(curr_data_file, temp_path)
             lh_data = nib.load(lh)
@@ -287,7 +295,8 @@ def proj_atlas(params):
                 th_h = params.config.threshold[1]
                 curr_data = np.where(
                     np.logical_and(curr_data > th_l, curr_data < th_h), 1, 0)
-            np.save(path.join(out_path, path.basename(curr_data_file) + params.config.name + '.npy'), curr_data)
+            out_path.append(path.join(out_dir, path.basename(curr_data_file) + params.config.name + '.npy'))
+            np.save(path.join(out_dir, path.basename(curr_data_file) + params.config.name + '.npy'), curr_data)
 
     return out_path
 
