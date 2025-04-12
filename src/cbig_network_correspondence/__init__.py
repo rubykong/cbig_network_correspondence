@@ -30,7 +30,8 @@ def combine_model(data_space, num_parts):
 data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'data')
 if not os.path.exists(data_dir):
     print("Download data")
-    Repo.clone_from('https://github.com/rubykong/cbig_network_correspondence_data', data_dir)
+    # only clone the latest commit of the master branch
+    Repo.clone_from('https://github.com/rubykong/cbig_network_correspondence_data', data_dir, depth=1, single_branch=True, branch='master')
 else:
     repo_dir = Repo(data_dir)
     repo_dir.remotes.origin.pull('master')
