@@ -470,7 +470,10 @@ def table_summary_singleplot(df,atlas_names,atlas_names_fullname):
     for dice_c in dice_list:
         # replace 0 with 0.0001
         df_all[dice_c] = df_all[dice_c].replace(0,0.0001)
-        df_all[dice_c] = df_all[dice_c].fillna(0)
+        df_all[dice_c] = pd.to_numeric(
+            df_all[dice_c],
+            errors="coerce"
+        ).fillna(0.0)
     for p_value_c in p_value_list:
         df_all[p_value_c] = pd.to_numeric(
             df_all[p_value_c],
