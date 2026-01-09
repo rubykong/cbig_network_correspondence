@@ -472,7 +472,10 @@ def table_summary_singleplot(df,atlas_names,atlas_names_fullname):
         df_all[dice_c] = df_all[dice_c].replace(0,0.0001)
         df_all[dice_c] = df_all[dice_c].fillna(0)
     for p_value_c in p_value_list:
-        df_all[p_value_c] = df_all[p_value_c].fillna(0)
+        df_all[p_value_c] = pd.to_numeric(
+            df_all[p_value_c],
+            errors="coerce"
+        ).fillna(0.0)
 
     col_defs = (
         [ColumnDefinition(
