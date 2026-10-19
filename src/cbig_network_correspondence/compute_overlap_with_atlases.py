@@ -9,21 +9,13 @@ import numpy as np
 import nibabel as nib
 from brainspace.null_models import SpinPermutations
 import pickle
+from . import datasets
 from . import grab_data_info as grab_info
 from . import visualize_overlap_lib as vis
 from . import visualize_report_lib as vis_report
 from scipy.io import loadmat
 from regfusion import vol_to_fsaverage
 import pandas as pd
-
-# define path
-PROJECT_PATH = path.dirname(path.abspath(__file__))
-ATLASES_PATH = path.join(PROJECT_PATH, "data", "atlases")
-NETWORK_ASSIGN_PATH = path.join(PROJECT_PATH, "data", "network_assignment")
-RESULTS_PATH = path.join(PROJECT_PATH, "data", "overlap_results")
-NET_NAME_PATH = path.join(PROJECT_PATH, "data", "network_names")
-ATLAS_LIST_PATH = path.join(PROJECT_PATH, "data", "atlas_list")
-ROTAION_PATH = path.join(PROJECT_PATH, "data", "spin_rotations")
 
 
 class DataParams:
@@ -32,9 +24,6 @@ class DataParams:
     """
     def __init__(self, config, data_path):
         self.data_path = data_path
-        self.project_path = PROJECT_PATH
-        self.atlases_path = ATLASES_PATH
-        self.network_assign_path = NETWORK_ASSIGN_PATH
 
         #if config is a file path
         if path.isfile(config):
@@ -49,17 +38,11 @@ class RefAtlasParams:
     This atlas is served as the reference atlas.
     """
     def __init__(self, atlas_name):
-        atlas_config = path.join(PROJECT_PATH,
-                                 "data",
-                                 "atlas_config",
-                                 atlas_name)
+        atlas_config = datasets.fetch_file(f"atlas_config/{atlas_name}")
         self.config = grab_info.read_config(atlas_config)
-        self.data_path = path.join(ATLASES_PATH,
-                                   self.config.space,
-                                   self.config.category)
-        self.project_path = PROJECT_PATH
-        self.atlases_path = ATLASES_PATH
-        self.network_assign_path = NETWORK_ASSIGN_PATH
+        self.data_path = datasets.fetch_dir(
+            f"atlases/{self.config.space}/{self.config.category}",
+            name_filter=self.config.name)
 
 
 class AtlasParams:
@@ -68,17 +51,11 @@ class AtlasParams:
     This atlas is not served as the reference atlas.
     """
     def __init__(self, atlas_name, atlas_space):
-        atlas_config = path.join(PROJECT_PATH,
-                                 "data",
-                                 "atlas_config",
-                                 atlas_name)
+        atlas_config = datasets.fetch_file(f"atlas_config/{atlas_name}")
         self.config = grab_info.read_config(atlas_config)
-        self.data_path = path.join(ATLASES_PATH,
-                                   atlas_space,
-                                   self.config.category)
-        self.project_path = PROJECT_PATH
-        self.atlases_path = ATLASES_PATH
-        self.network_assign_path = NETWORK_ASSIGN_PATH
+        self.data_path = datasets.fetch_dir(
+            f"atlases/{atlas_space}/{self.config.category}",
+            name_filter=self.config.name)
 
 
 def sort_files(data_path, filename):
@@ -101,9 +78,7 @@ def sort_files(data_path, filename):
         files_sorted_res = [data_path]
         return files_sorted_res
     else:
-        #print error message
-        print("ERROR! Please provide a valid data path!")
-        sys.exit(1)
+        raise FileNotFoundError(f"Please provide a valid data path! Got: {data_path!r}")
 
 
 def read_file(data_path):
@@ -145,9 +120,6 @@ def read_atlas(params):
     """
     Reads in atlas based on config information
 
-    self.project_path = project_path
-    self.atlases_path = atlases_path
-    self.network_assign_path = network_assign_path
     params.config:
     - params.config.category:
         the categopry of atlas or data
@@ -171,8 +143,7 @@ def read_atlas(params):
         # We need to do network assignment based on the povided mapping
         if params.config.netassign:
             datatmp = copy.deepcopy(data)
-            mapfile = path.join(params.network_assign_path, params.config.name
-                                + ".mat")
+            mapfile = datasets.fetch_file(f"network_assignment/{params.config.name}.mat")
             mapfile_data = loadmat(mapfile)
             mapping = mapfile_data.get('mapping')
             #transpose mapping if needed
@@ -185,9 +156,7 @@ def read_atlas(params):
         # For data in the volumetric space
         # Apply cortical mask
         if "mm" in params.config.space:
-            corticalmask = path.join(params.project_path, "data",
-                                     "cortical_masks",
-                                     params.config.space + ".nii.gz")
+            corticalmask = datasets.fetch_file(f"cortical_masks/{params.config.space}.nii.gz")
             mask = read_file(corticalmask)
             data[mask == 0] = 0
 
@@ -196,9 +165,7 @@ def read_atlas(params):
         data = []
         # Read in cortical mask for data in volumetric space
         if "mm" in params.config.space:
-            corticalmask = path.join(params.project_path, "data",
-                                     "cortical_masks",
-                                     params.config.space + ".nii.gz")
+            corticalmask = datasets.fetch_file(f"cortical_masks/{params.config.space}.nii.gz")
             mask = read_file(corticalmask)
         params.data_sort_path = sort_files(params.data_path, params.config.name)
         for curr_data_file in params.data_sort_path:
@@ -220,9 +187,6 @@ def proj_atlas(params):
     """
     Project FSLMNI152 atlas to the surface space
 
-    self.project_path = project_path
-    self.atlases_path = atlases_path
-    self.network_assign_path = network_assign_path
     params.config:
     - params.config.category:
         the categopry of atlas or data
@@ -301,7 +265,7 @@ def proj_atlas(params):
     return out_path
 
 def if_atlas_exist(atlas_name):
-    atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+    atlas_list_file = open(datasets.fetch_file("atlas_list"),"r", encoding="utf8")
     atlas_names = atlas_list_file.read().splitlines()
     if atlas_name in atlas_names:
         return True
@@ -409,7 +373,7 @@ def compute_overlap_spin(ref_params, other_params):
     another atlas.
     """
     # prepare spin rotations
-    rotation_file = path.join(ROTAION_PATH, ref_params.config.space, "1000_spin_permutations_state0.pkl")
+    rotation_file = datasets.fetch_spin_rotations(ref_params.config.space)
     spin_rots = pickle.load(open(rotation_file, "rb"))
     if ref_params.config.space == "fsaverage6":
         hemi_size = 40962
@@ -515,14 +479,13 @@ def compute_overlap_data_all(data_params, atlas_names=None):
     """
     # Reads in the atlas in the same space as the data
     if atlas_names is None:
-        atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+        atlas_list_file = open(datasets.fetch_file("atlas_list"),"r", encoding="utf8")
         atlas_names = atlas_list_file.read().splitlines()
     overlap_val = {}
     for atlas_name in atlas_names:
         print("Computing overlap with " + atlas_name)
         if not if_atlas_exist(atlas_name):
-            print("Atlas " + atlas_name + " does not exist.")
-            sys.exit(1)
+            raise ValueError(f"Atlas {atlas_name!r} does not exist.")
         atlas_params = AtlasParams(atlas_name, data_params.config.space)
         # Compute the overlap matrix between data and the atlas
         overlap_val[atlas_name] = compute_overlap(data_params, atlas_params)
@@ -543,7 +506,7 @@ def permute_overlap_data_all(data_params, atlas_names):
 
     if atlas_names is None:
         # Reads in the atlas in the same space as the data
-        atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+        atlas_list_file = open(datasets.fetch_file("atlas_list"),"r", encoding="utf8")
         atlas_names = atlas_list_file.read().splitlines()
     elif isinstance(atlas_names, str):
         atlas_names = [atlas_names]
@@ -551,8 +514,7 @@ def permute_overlap_data_all(data_params, atlas_names):
     for atlas_name in atlas_names:
         print("Performing permutation with " + atlas_name)
         if not if_atlas_exist(atlas_name):
-            print("Atlas " + atlas_name + " does not exist.")
-            sys.exit(1)
+            raise ValueError(f"Atlas {atlas_name!r} does not exist.")
 
         atlas_params = AtlasParams(atlas_name, data_params.config.space)
         
@@ -566,9 +528,7 @@ def load_overlap_atlases(ref_atlas_name, other_atlas_name):
     """
     Load overlap matrix for any pair of existing atlases
     """
-    overlap_file = path.join(RESULTS_PATH,
-                             ref_atlas_name,
-                             other_atlas_name + '.mat')
+    overlap_file = datasets.fetch_file(f"overlap_results/{ref_atlas_name}/{other_atlas_name}.mat")
     data = loadmat(overlap_file)
     overlap_val = np.array(data.get('overlap'))
 
@@ -650,8 +610,7 @@ def data_network_correspondence(ref_params, atlas_names_list):
     # throw error message if the matrix is not 1xN
     for key, value in overlap_mat_all.items():
         if value.shape[0] != 1:
-            print("ERROR! The overlap matrix for atlas " + key + " is not a 1xN matrix.")
-            sys.exit(1)
+            raise ValueError(f"The overlap matrix for atlas {key} is not a 1xN matrix.")
     p_val = permute_overlap_data_all(ref_params, atlas_names_list)
     network_names = vis.construct_network_name_all(atlas_names_list)
 
@@ -724,8 +683,8 @@ def network_correspondence(ref_input, atlas_names_list,out_dir,ref_networks=None
             elif isinstance(ref_input, DataParams):
                 ref_networks_data = ref_input.config.name
             else:
-                # print error
-                print("ERROR! Cannot get reference networks based on ref_input. Please provide a valid reference network data.")
-                sys.exit(1)
+                raise ValueError(
+                    "Cannot get reference networks based on ref_input. "
+                    "Please provide a valid reference network data.")
         vis_report.report_atlas_network_correspondence(combined_data,ref_networks_data,out_dir)
         

@@ -109,6 +109,9 @@ Check this list for the atlases we have included. We use abbreviations for the a
 | EG5          | Gordon2023                     | Evan Gordon2023 5 networks                             |
 | TW_TASK_NETS | Woodward2024                   | Todd Woodward 2024 12 Task-based Networks              |
 | DU15NET      | Du2024                         | Jingnan Du2024 15 networks                             |
+| GINNA33      | Gillig2025                     | Achille Gillig2025 33 networks                         |
+| JacksonSC4   | Jackson2021                    | Rebecca Jackson2021 4 semantic cognition networks      | 
+| BL3          | Lipkin2022                     | Ben Lipkin2022 lanA, multiple demand and ToM  networks |
 
 These atlases should be automatically downloaded when you install the toolbox. If you want to download the atlases manually, you can find the atlases here: https://github.com/rubykong/cbig_network_correspondence_data. The atlas data will be automatically downloaded in your python package directory: `cbig_network_correspondence/src/cbig_network_correspondence/data`.
 

@@ -7,14 +7,7 @@ import copy
 from nilearn import plotting
 from nilearn import image
 import matplotlib.colors as colors
-
-
-# define path
-PROJECT_PATH = path.dirname(path.abspath(__file__))
-NET_NAME_PATH = path.join(PROJECT_PATH, "data", "network_names")
-RESULTS_PATH = path.join(PROJECT_PATH, "data", "overlap_results")
-ATLAS_LIST_PATH = path.join(PROJECT_PATH, "data", "atlas_list")
-TEMPLATE_PATH = path.join(PROJECT_PATH, "data", "templates")
+from . import datasets
 
 def pair_match(overlap_mat):
     """
@@ -57,10 +50,10 @@ def construct_network_name(atlas_input):
     reads in the single network name directly. The input data should be one single network
     or one single metric data.
     """
-    atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+    atlas_list_file = open(datasets.fetch_file("atlas_list"),"r", encoding="utf8")
     atlas_names = atlas_list_file.read().splitlines()
     if atlas_input in atlas_names:
-        atlas_name_file = path.join(NET_NAME_PATH, atlas_input)
+        atlas_name_file = datasets.fetch_file(f"network_names/{atlas_input}")
         atlas_name_file = open(atlas_name_file,"r", encoding="utf8")
         network_names = atlas_name_file.read().splitlines()
     elif isinstance(atlas_input, list) and all(isinstance(elem, str) for elem in atlas_input):
@@ -77,14 +70,23 @@ def construct_network_name(atlas_input):
 
 def draw_overlap_mat(overlap_data_info, ref_atlas_name, other_atlas_name, minv=0, maxv=1, figfile=None):
     """
-    Draw a given overlap matrix. 
+    Draw a given overlap matrix. overlap_data_info is either a {'Dice': ..., 'P
+    value': ...} dict (e.g. from a spin-permutation comparison, see
+    report_atlas_network_correspondence) or a plain Dice-overlap array (e.g. from
+    load_overlap_atlases()/overlap_results, which stores no p-values) -- the
+    significance-marker overlay below is only drawn when p-values are available.
     """
-    overlap_data = overlap_data_info['Dice']
-    pval = overlap_data_info['P value']
+    if isinstance(overlap_data_info, dict):
+        overlap_data = overlap_data_info['Dice']
+        pval = overlap_data_info['P value']
+    else:
+        overlap_data = overlap_data_info
+        pval = None
     overlap_data_reorder = copy.deepcopy(overlap_data)
     order_idx = pair_match(overlap_data_reorder)
     overlap_data = overlap_data[:, order_idx]
-    pval = pval[:, order_idx]
+    if pval is not None:
+        pval = pval[:, order_idx]
     reference_name = construct_network_name(ref_atlas_name)
     other_name = construct_network_name(other_atlas_name)
 
@@ -105,10 +107,11 @@ def draw_overlap_mat(overlap_data_info, ref_atlas_name, other_atlas_name, minv=0
             yticklabels=reference_name,
             cbar=False
             )
-    for i in range(overlap_data.shape[0]):
-        for j in range(overlap_data.shape[1]):
-            if pval[i,j] < 0.05:
-                im.text(j+0.5, i+0.5, '*', fontsize=14, ha='center', va='center', color='white')
+    if pval is not None:
+        for i in range(overlap_data.shape[0]):
+            for j in range(overlap_data.shape[1]):
+                if pval[i,j] < 0.05:
+                    im.text(j+0.5, i+0.5, '*', fontsize=14, ha='center', va='center', color='white')
 
     frame_len=3.5
     axes.axhline(y=0, color='k',linewidth=frame_len)
@@ -167,7 +170,7 @@ def draw_overlap_mat_all(overlap_data_all, ref_atlas_name, atlas_names_list=None
 
 def construct_network_name_all(atlas_names=None):
     if atlas_names is None:
-        atlas_list_file = open(ATLAS_LIST_PATH,"r", encoding="utf8")
+        atlas_list_file = open(datasets.fetch_file("atlas_list"),"r", encoding="utf8")
         atlas_names = atlas_list_file.read().splitlines()
     network_names = {}
     for atlas_name in atlas_names:
@@ -178,7 +181,7 @@ def draw_overlap_atlases(ref_atlas_name, other_atlas_name, minv, maxv, figfile):
     """
     Draw overlap matrix for any pair of existing atlases
     """
-    overlap_file = path.join(RESULTS_PATH, ref_atlas_name, other_atlas_name + '.mat')
+    overlap_file = datasets.fetch_file(f"overlap_results/{ref_atlas_name}/{other_atlas_name}.mat")
     data = scipy.io.loadmat(overlap_file)
     overlap_data = np.array(data.get('overlap'))
     draw_overlap_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, figfile)
@@ -191,8 +194,8 @@ def draw_overlap_map_fs_LR_32k(overlap_data, outfig):
     colors4_list = [(0.7, 0.7, 0.7), (0.89, 0.39, 0.45),
                     (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
     cmap4 = colors.ListedColormap(colors4_list)
-    lh_surf_mesh = path.join(TEMPLATE_PATH, 'fs_LR_32k', 'lh.very_inflated')
-    rh_surf_mesh = path.join(TEMPLATE_PATH, 'fs_LR_32k', 'rh.very_inflated')
+    lh_surf_mesh = datasets.fetch_file('templates/fs_LR_32k/lh.very_inflated')
+    rh_surf_mesh = datasets.fetch_file('templates/fs_LR_32k/rh.very_inflated')
     
     lh_fig_l = plotting.plot_surf(surf_mesh=lh_surf_mesh,
                                   surf_map=overlap_data[:32492],
@@ -220,8 +223,8 @@ def draw_overlap_map_fsaverage6(overlap_data, outfig):
     colors4_list = [(0.7, 0.7, 0.7), (0.89, 0.39, 0.45),
                     (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
     cmap4 = colors.ListedColormap(colors4_list)
-    lh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage6', 'lh.inflated')
-    rh_surf_mesh = path.join(TEMPLATE_PATH, 'fsaverage6', 'rh.inflated')
+    lh_surf_mesh = datasets.fetch_file('templates/fsaverage6/lh.inflated')
+    rh_surf_mesh = datasets.fetch_file('templates/fsaverage6/rh.inflated')
 
     lh_fig_l = plotting.plot_surf(surf_mesh=lh_surf_mesh,
                                   surf_map=overlap_data[:40962],
@@ -249,9 +252,8 @@ def draw_overlap_map_FSLMNI2mm(overlap_data, outfig, coords=[-4, -31, 18]):
     """
     colors3_list = [(0.89, 0.39, 0.45), (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
     cmap3 = colors.ListedColormap(colors3_list)
-    bg_image = image.load_img(path.join(TEMPLATE_PATH, 'FSLMNI2mm.nii.gz'))
-    roi_image_header = image.load_img(path.join(TEMPLATE_PATH,
-                                                'FSLMNI2mm_header.nii.gz'))
+    bg_image = image.load_img(datasets.fetch_file('templates/FSLMNI2mm.nii.gz'))
+    roi_image_header = image.load_img(datasets.fetch_file('templates/FSLMNI2mm_header.nii.gz'))
     new_image = image.new_img_like(roi_image_header, overlap_data)
     figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
                              cut_coords=coords, cmap=cmap3)
@@ -267,9 +269,8 @@ def draw_overlap_map_LairdColin2mm(overlap_data, outfig, coords=[-4, -31, 18]):
     """
     colors3_list = [(0.89, 0.39, 0.45), (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
     cmap3 = colors.ListedColormap(colors3_list)
-    bg_image = image.load_img(path.join(TEMPLATE_PATH, 'LairdColin1mm.nii.gz'))
-    roi_image_header = image.load_img(path.join(TEMPLATE_PATH,
-                                                'FSLMNI2mm_header.nii.gz'))
+    bg_image = image.load_img(datasets.fetch_file('templates/LairdColin1mm.nii.gz'))
+    roi_image_header = image.load_img(datasets.fetch_file('templates/FSLMNI2mm_header.nii.gz'))
     new_image = image.new_img_like(roi_image_header, overlap_data)
     figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
                              cut_coords=coords, cmap=cmap3)
@@ -283,9 +284,8 @@ def draw_overlap_map_ShenColin1mm(overlap_data, outfig, coords=[-4, -31, 18]):
     """
     colors3_list = [(0.89, 0.39, 0.45), (0.21, 0.18, 0.75), (0.55, 0.29, 0.6)]
     cmap3 = colors.ListedColormap(colors3_list)
-    bg_image = image.load_img(path.join(TEMPLATE_PATH, 'ShenColin1mm.nii.gz'))
-    roi_image_header = image.load_img(path.join(TEMPLATE_PATH,
-                                                'ShenColin1mm_header.nii.gz'))
+    bg_image = image.load_img(datasets.fetch_file('templates/ShenColin1mm.nii.gz'))
+    roi_image_header = image.load_img(datasets.fetch_file('templates/ShenColin1mm_header.nii.gz'))
     new_image = image.new_img_like(roi_image_header, overlap_data)
     figv = plotting.plot_roi(roi_img=new_image, bg_img=bg_image,
                              cut_coords=coords, cmap=cmap3)
