@@ -1,15 +1,12 @@
-from os import path
+from . import datasets
 
-# define path
-PROJECT_PATH = path.dirname(path.abspath(__file__))
-EXAMPLE_PATH = path.join(PROJECT_PATH, "data", "examples")
-example_config = path.join(EXAMPLE_PATH, "Exemplar1_pos")
-example_nii = path.join(EXAMPLE_PATH, "Exemplar1.nii.gz")
+_FILES = {
+    "example_config": "examples/Exemplar1_pos",
+    "example_nii": "examples/Exemplar1.nii.gz",
+}
 
 
-def __init__(self):
-    """
-    This defines the parameter structures for a given data
-    """
-    self.data_path = example_nii
-    self.config_file = example_config
+def __getattr__(name):
+    if name in _FILES:
+        return datasets.fetch_file(_FILES[name])
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

@@ -4,6 +4,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- release atlases from GINNA (Gillig2025), Jackson2021, Lipkin2022
+
+### Changed
+- Data is no longer fetched by `git clone`/`git pull` as a side effect of `import cbig_network_correspondence`. Instead, individual data files are downloaded lazily (on first actual use) and cached locally via [Pooch](https://www.fatiando.org/pooch/), pinned to a tagged release (`v1.1.0`) of [cbig_network_correspondence_data](https://github.com/rubykong/cbig_network_correspondence_data) and verified by checksum. `spin_rotations` (large, static) is fetched separately from the rest of the data, only when a permutation test is actually run.
+- The cache location can be overridden with the `CBIG_NETWORK_CORRESPONDENCE_DATA_DIR` environment variable. A new `cnc.datasets.prefetch_all()` helper can warm the whole cache ahead of time (e.g. on a cluster login node before submitting offline jobs).
+- Replaced the `gitpython` dependency with `pooch`.
+
+### Fixed
+- Several error paths in `compute_overlap_with_atlases.py` called `sys.exit(1)` without `sys` ever being imported, raising a `NameError` instead of a clear error message. These now raise `ValueError`/`FileNotFoundError` instead.
+- Removed dead, unreachable code in `load_example.py` (a top-level `def __init__(self):` that was never attached to any class).
 
 ## [0.3.3] - 2025-02-14
 ### Fixed
