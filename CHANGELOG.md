@@ -4,6 +4,8 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/), and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Fixed
+- improve the readme and usage.ipynb to explain more about the downloading atlases section
 
 ## [0.4.0] - 2026-10-19
 ### Added
@@ -107,4 +109,3 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 [0.0.11]: https://github.com/rubykong/cbig_network_correspondence/compare/0.0.10...0.0.11
 [0.0.10]: https://github.com/rubykong/cbig_network_correspondence/compare/0.0.9...0.0.10
 [0.0.9]: https://github.com/rubykong/cbig_network_correspondence/tree/0.0.9
-
