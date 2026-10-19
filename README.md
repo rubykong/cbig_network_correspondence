@@ -113,7 +113,35 @@ Check this list for the atlases we have included. We use abbreviations for the a
 | JacksonSC4   | Jackson2021                    | Rebecca Jackson2021 4 semantic cognition networks      | 
 | BL3          | Lipkin2022                     | Ben Lipkin2022 lanA, multiple demand and ToM  networks |
 
-These atlases should be automatically downloaded when you install the toolbox. If you want to download the atlases manually, you can find the atlases here: https://github.com/rubykong/cbig_network_correspondence_data. The atlas data will be automatically downloaded in your python package directory: `cbig_network_correspondence/src/cbig_network_correspondence/data`.
+Atlas/template files are not bundled with the package. Instead, each file is downloaded lazily (on first actual use, not at import time) and cached locally, so `import cbig_network_correspondence` stays fast and you only pay for the atlases you actually use. If you want to browse the raw data, you can find it here: https://github.com/rubykong/cbig_network_correspondence_data.
+
+#### Where data gets downloaded
+
+By default, data is cached under the platform's standard cache directory (e.g. `~/.cache/cbig_network_correspondence` on Linux). If you haven't chosen a location, the toolbox will raise a one-time warning the first time it downloads anything, telling you exactly where the files are going.
+
+You can choose a different location in one of two ways:
+
++ Call `cnc.datasets.set_data_dir(path)` before fetching any data:
+  ```python
+  import cbig_network_correspondence as cnc
+  cnc.datasets.set_data_dir("/path/to/my/cache")
+  ```
++ Or set the `CBIG_NETWORK_CORRESPONDENCE_DATA_DIR` environment variable before launching python, e.g. useful on a cluster to point every job at a shared cache:
+  ```sh
+  export CBIG_NETWORK_CORRESPONDENCE_DATA_DIR=/path/to/shared/cache
+  ```
+
+#### Pre-downloading all atlases
+
+If you'd rather download everything up front (e.g. on a login node with internet access, before submitting jobs to worker nodes that don't have it), use `cnc.datasets.prefetch_all()`:
+
+```python
+import cbig_network_correspondence as cnc
+
+cnc.datasets.set_data_dir("/path/to/my/cache")  # optional
+cnc.datasets.prefetch_all()  # downloads every atlas/template/mask
+cnc.datasets.prefetch_all(include_spin=True)  # also download the (large) spin-rotation permutation files
+```
 
 
 ### Input data

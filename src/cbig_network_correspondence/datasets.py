@@ -5,14 +5,18 @@ Pooch. The data repo is pinned to a git tag so results are reproducible across
 installs; bump DATA_TAG (and regenerate the registry files with
 scripts/make_data_registry.py) whenever a new data release is cut.
 
-The cache location defaults to the platform cache dir, overridable with the
-CBIG_NETWORK_CORRESPONDENCE_DATA_DIR environment variable -- useful on a
-cluster to pre-populate a shared cache on a login node before running jobs on
-worker nodes without internet access (see prefetch_all()).
+The cache location can be chosen, in order of precedence, by calling
+set_data_dir(), by setting the CBIG_NETWORK_CORRESPONDENCE_DATA_DIR
+environment variable, or (useful on a cluster) pre-populating a shared cache
+on a login node before running jobs on worker nodes without internet access
+(see prefetch_all()). If none of these is used, data is downloaded to the
+platform default cache dir and a warning is raised the first time anything
+is fetched, naming that directory.
 """
 import gzip
 import os
 import shutil
+import warnings
 from pathlib import Path
 
 import pooch
@@ -21,20 +25,68 @@ DATA_REPO = "rubykong/cbig_network_correspondence_data"
 DATA_TAG = "v1.1.0"
 _BASE_URL = f"https://raw.githubusercontent.com/{DATA_REPO}/{DATA_TAG}/"
 _REGISTRY_DIR = Path(__file__).parent / "registry"
-_CACHE_ROOT = Path(os.environ.get(
-    "CBIG_NETWORK_CORRESPONDENCE_DATA_DIR",
-    pooch.os_cache("cbig_network_correspondence"),
-))
 
-CORE = pooch.create(path=_CACHE_ROOT / "core", base_url=_BASE_URL, registry=None)
-CORE.load_registry(_REGISTRY_DIR / "core.txt")
+_CACHE_ROOT = None
+_cache_root_explicit = False
+_warned_default_cache = False
+CORE = None
+SPIN = None
 
-SPIN = pooch.create(path=_CACHE_ROOT / "spin_rotations", base_url=_BASE_URL, registry=None)
-SPIN.load_registry(_REGISTRY_DIR / "spin_rotations.txt")
+
+def _init_cache_root():
+    global _CACHE_ROOT, _cache_root_explicit
+    env_dir = os.environ.get("CBIG_NETWORK_CORRESPONDENCE_DATA_DIR")
+    if env_dir:
+        _CACHE_ROOT = Path(env_dir)
+        _cache_root_explicit = True
+    else:
+        _CACHE_ROOT = Path(pooch.os_cache("cbig_network_correspondence"))
+        _cache_root_explicit = False
+
+
+def _build_fetchers():
+    global CORE, SPIN
+    CORE = pooch.create(path=_CACHE_ROOT / "core", base_url=_BASE_URL, registry=None)
+    CORE.load_registry(_REGISTRY_DIR / "core.txt")
+    SPIN = pooch.create(path=_CACHE_ROOT / "spin_rotations", base_url=_BASE_URL, registry=None)
+    SPIN.load_registry(_REGISTRY_DIR / "spin_rotations.txt")
+
+
+_init_cache_root()
+_build_fetchers()
+
+
+def set_data_dir(path):
+    """Set the local directory that downloaded atlas/data files are cached in.
+
+    Call this (before fetching any data) to choose a location instead of the
+    CBIG_NETWORK_CORRESPONDENCE_DATA_DIR environment variable or the platform
+    default cache directory. Already-cached files are not moved.
+    """
+    global _CACHE_ROOT, _cache_root_explicit, _warned_default_cache
+    _CACHE_ROOT = Path(path)
+    _cache_root_explicit = True
+    _warned_default_cache = True
+    _build_fetchers()
+
+
+def _warn_if_default_cache():
+    global _warned_default_cache
+    if not _cache_root_explicit and not _warned_default_cache:
+        _warned_default_cache = True
+        warnings.warn(
+            "No data directory was specified for cbig_network_correspondence; "
+            f"data will be downloaded to the default cache directory: {_CACHE_ROOT}. "
+            "Set the CBIG_NETWORK_CORRESPONDENCE_DATA_DIR environment variable or "
+            "call cbig_network_correspondence.datasets.set_data_dir(path) to choose "
+            "a different location.",
+            stacklevel=2,
+        )
 
 
 def fetch_file(relative_path):
     """Download (if not already cached) one core data file, return its local path."""
+    _warn_if_default_cache()
     return CORE.fetch(relative_path)
 
 
@@ -45,6 +97,7 @@ def fetch_dir(relative_prefix, name_filter=None):
     atlas's file(s) out of a shared category folder), and return the local
     directory path containing them.
     """
+    _warn_if_default_cache()
     prefix = relative_prefix.rstrip("/") + "/"
     matches = [
         key for key in CORE.registry
@@ -63,6 +116,7 @@ def fetch_spin_rotations(data_space):
     Download (if not already cached), reassemble, and decompress the spin-rotation
     permutation model for a given surface space. Returns the local .pkl path.
     """
+    _warn_if_default_cache()
     prefix = f"spin_rotations/{data_space}/"
     final_path = Path(SPIN.abspath) / data_space / "1000_spin_permutations_state0.pkl"
     if final_path.exists():
@@ -94,6 +148,7 @@ def prefetch_all(include_spin=False):
     """Warm the local cache for every registered core file (and optionally spin
     rotations too). Useful to run once on a machine with internet access before
     running jobs on a cluster node that has none."""
+    _warn_if_default_cache()
     for key in CORE.registry:
         CORE.fetch(key)
     if include_spin:
