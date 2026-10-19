@@ -1,3 +1,6 @@
+import copy
+import random
+
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -545,10 +548,10 @@ def draw_pvalue_mat(overlap_data, ref_atlas_name, other_atlas_name, minv, maxv, 
     Draw a given overlap matrix. 
     """
     overlap_data_reorder = copy.deepcopy(overlap_data)
-    order_idx = pair_match(overlap_data_reorder)
+    order_idx = vis.pair_match(overlap_data_reorder)
     overlap_data = overlap_data[:, order_idx]
-    reference_name = construct_network_name(ref_atlas_name)
-    other_name = construct_network_name(other_atlas_name)
+    reference_name = vis.construct_network_name(ref_atlas_name)
+    other_name = vis.construct_network_name(other_atlas_name)
 
     other_name_new = [other_name[i] for i in order_idx]
 
