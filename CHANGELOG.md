@@ -13,6 +13,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 - Replaced the `gitpython` dependency with `pooch`.
 
 ### Fixed
+- `import cbig_network_correspondence` still ran the pre-migration code path (`git clone`/`git pull` of the entire data repo, plus manual spin-rotation part-reassembly) left over in `__init__.py` from before the lazy pooch-fetch migration above, so a fresh import could hang indefinitely instead of being near-instant as documented. Removed the dead code; `datasets.py`'s lazy fetching already covers everything it did.
 - Several error paths in `compute_overlap_with_atlases.py` called `sys.exit(1)` without `sys` ever being imported, raising a `NameError` instead of a clear error message. These now raise `ValueError`/`FileNotFoundError` instead.
 - Removed dead, unreachable code in `load_example.py` (a top-level `def __init__(self):` that was never attached to any class).
 
