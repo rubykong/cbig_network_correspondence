@@ -88,6 +88,11 @@ pytest-github-actions-annotate-failures = "*"
 pytest-cov = "*"
 python-kacl = "*"
 pyupgrade = "*"
+# flake8-logging-format needs pkg_resources at runtime but doesn't declare
+# setuptools itself as a dependency (it was historically always present in a
+# venv, but Poetry doesn't seed it in automatically). Pinned below 81 -- newer
+# setuptools (confirmed as of 82.0.1) has fully removed pkg_resources.
+setuptools = "<81"
 tryceratops = "*"
 
 [build-system]
